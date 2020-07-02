@@ -1,2 +1,17 @@
 ---
 # Role tasks
+- block:
+    - include_tasks: install.yml
+      tags:
+        - role::mysql::install
+
+    - include_tasks: autojoin.yml
+      when: check_mk_agent_autojoin
+      tags:
+        - role::mysql::configure
+
+    - include_tasks: replication.yml
+      tags:
+        - role::mysql::replication
+  tags:
+    - role::mysql

@@ -1,0 +1,61 @@
+{{ ansible_managed | comment }}
+[mysqld]
+character-set-server             = {{ mysql_character-set-server }}
+collation-server                 = {{ mysql_collation-server }}
+datadir                          = {{ mysql_datadir }}
+pid-file                         = {{ mysql_pid-file }}
+socket                           = {{ mysql_socket }}
+ignore-db-dir                    = {{ mysql_ignore-db-dir }}
+max-heap-table-size              = {{ mysql_max-heap-table-size }}
+join_buffer_size                 = {{ mysql_join_buffer_size }}
+key_buffer_size                  = {{ mysql_key_buffer_size }}
+max-allowed-packet               = {{ mysql_max-allowed-packet }}
+max-connect-errors               = {{ mysql_max-connect-errors }}
+max-connections                  = {{ mysql_max-connections }}
+open-files-limit                 = {{ mysql_open-files-limit }}
+sort_buffer_size                 = {{ mysql_sort_buffer_size  }}
+symbolic-links                   = {{ mysql_symbolic-links }}
+table-definition-cache           = {{ mysql_table-definition-cache }}
+table-open-cache                 = {{ mysql_table-open-cache }}
+thread-cache-size                = {{ mysql_thread-cache-size }}
+tmp-table-size                   = {{ mysql_tmp-table-size }}
+user                             = {{ mysql_user }}
+validate-password-policy         = {{ mysql_validate-password-policy }}
+
+# Innodb
+innodb-buffer-pool-instances     = {{ mysql_innodb-buffer-pool-instances  }}
+innodb-buffer-pool-size          = {{ mysql_innodb-buffer-pool-size }}
+innodb-file-per-table            = {{ mysql_innodb-file-per-table}}
+innodb-flush-log-at-trx-commit   = {{ mysql_innodb-flush-log-at-trx-commit }}
+innodb-flush-method              = {{ mysql_innodb-flush-method }}
+innodb-log-files-in-group        = {{ mysql_innodb-log-files-in-group  }}
+innodb-log-file-size             = {{ mysql_innodb-log-file-size  }}
+innodb_temp_data_file_path       = {{ mysql_innodb_temp_data_file_path  }}
+innodb-page-cleaners             = {{ mysql_innodb-page-cleaners }}
+
+{% if mysql_release != "80" %}
+# Mysql 5.7 or lower
+internal_tmp_disk_storage_engine = {{ mysql_internal_tmp_disk_storage_engine }}
+query-cache-size                 = {{ mysql_query-cache-size }}
+query-cache-type                 = {{ mysql_query-cache-type }}
+{% fi %}
+
+# Slow queries logging.
+long-query-time                  = {{ mysql_long-query-time }}
+slow-query-log                   = {{ mysql_slow-query-log  }}
+slow-query-log-file              = {{ mysql_slow-query-log-file }}
+
+
+{% if mysql_replication %}
+# Replication parameters
+server-id                        = {{ mysql_server-id }}
+{% fi %}
+{% if mysql_server-id == 1 %}
+expire-logs-days                 = {{ mysql_expire-logs-days  }}
+log-bin                          = {{ mysql_log-bin }}
+{% else %}
+relay-log                        = {{ mysql_relay-log }}
+{% fi %}
+
+log-error                       = {{ mysql_log-error }}
+log_timestamps                  = {{ mysql_log_timestamps }}

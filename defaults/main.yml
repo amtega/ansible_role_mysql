@@ -1,2 +1,66 @@
 ---
 # Role default lower priority variables
+
+# Release to install
+mysql_release: "57"
+# Version to install. Only avaliable on CentOS / RHEL
+mysql_version: "5.7.18-1"
+# Freeze the packages to prevent updates
+mysql_freeze_version: true
+
+
+# Variables to fill the my.cnf file
+# General purpose
+mysql_character-set-server: utf8
+mysql_collation-server: utf8_spanish_ci
+mysql_datadir: /var/lib/mysql
+mysql_ignore-db-dir: lost+found
+mysql_join_buffer_size: 256M
+mysql_key_buffer_size: 256M
+mysql_max-allowed-packet: 32M
+mysql_max-connect-errors: 1000000
+mysql_max-connections: 100
+mysql_max-heap-table-size: 32M
+mysql_open-files-limit: 65535
+mysql_socket: /var/lib/mysql/mysql.sock
+mysql_sort_buffer_size: 64M
+mysql_table-definition-cache: 4096
+mysql_table-open-cache: 4096
+mysql_thread-cache-size: 500
+mysql_tmp-table-size: 32M
+mysql_user: mysql
+mysql_validate-password-policy: LOW
+mysql_pid-file: /var/run/mysqld/mysqld.pid
+mysql_symbolic-links: 0
+
+# Innodb variables
+mysql_innodb-buffer-pool-instances: 2
+mysql_innodb-buffer-pool-size: 600M
+mysql_innodb-file-per-table: 1
+mysql_innodb-flush-log-at-trx-commit: 1
+mysql_innodb-flush-method: O_DIRECT
+mysql_innodb-log-files-in-group: 2
+mysql_innodb-log-file-size: 512M
+mysql_innodb_temp_data_file_path: "../mysql_tmp/ibtmp1:50M:autoextend:max:15G"
+mysql_innodb-page-cleaners: 2
+
+# Log
+mysql_log_timestamps: system
+mysql_log-error: /var/log/mysql/mysqld.log
+
+# Slow query
+mysql_long-query-time: 3
+mysql_slow-query-log: 1
+mysql_slow-query-log-file: /var/log/mysql/mysql-slow.log
+
+# Replication
+mysql_server-id: 1
+mysql_expire-logs-days: 1
+mysql_log-bin: /var/lib/mysql_binlog/mysql-bin.log
+mysql_relay-log: /var/lib/mysql_binlog/mysql-relay.log
+
+
+# Only for releases 57 or lower
+mysql_internal_tmp_disk_storage_engine: MYISAM
+mysql_query-cache-size: 0
+mysql_query-cache-type: OFF

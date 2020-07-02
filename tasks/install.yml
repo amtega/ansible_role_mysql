@@ -1,0 +1,27 @@
+---
+# Role tasks
+- name: Load OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - ../vars/{{ ansible_distribution | lower }}.yml
+    - ../vars/{{ ansible_os_family | lower }}.yml
+
+- name: Install mysql community repository package
+  yum:
+    name: "http://dev.mysql.com/get/{{ mysql_repository_rpm }}"
+    state: present
+    disable_gpg_check: yes
+
+- name: Disable all releases repositories by default
+  ini_file:
+      path: "{{ mysql_repo_file_path }}"
+      section: "mysql80-community"
+      option: "enabled"
+      value: "0"
+
+- name: Install selected version
+  yum:
+    name: "mysql-community*{{ mysql_version }}*"
+    state: present
+    enablerepo: "mysql{{ mysql_release }}-community"
+    disable_gpg_check: "{{ mysql_disable_gpg_check | bool }}"
