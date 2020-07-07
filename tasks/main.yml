@@ -2,15 +2,19 @@
 # Role tasks
 - block:
     - include_tasks: install.yml
+      when: mysql_install
       tags:
         - role::mysql::install
 
-    - include_tasks: autojoin.yml
-      when: check_mk_agent_autojoin
+    - include_tasks: configure.yml
+      when: mysql_configure
       tags:
         - role::mysql::configure
 
     - include_tasks: replication.yml
+      when:
+        - mysql_replication
+        - mysql_server-id > 1
       tags:
         - role::mysql::replication
   tags:

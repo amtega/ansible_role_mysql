@@ -21,7 +21,35 @@
 
 - name: Install selected version
   yum:
-    name: "mysql-community*{{ mysql_version }}*"
+    name: "{{ package }}"
     state: present
     enablerepo: "mysql{{ mysql_release }}-community"
     disable_gpg_check: "{{ mysql_disable_gpg_check | bool }}"
+  loop: "{{ mysql_packages }}"
+  loop_caontrol:
+    loop_var: package
+
+- name: Create custom dirs
+  file:
+    path: "{{ mysql_custom_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
+  loop:
+    - "{{ mysql_innodb_temp_dir }}"
+    - "{{ mysql_binlog_dir }}"
+    - "{{ mysql_log_dir }}"
+  loop_control:
+    loop_var: mysql_custom_dir
+
+- name: Set configuration file
+  template:
+    src: my.cnf.j2
+    dest: "{{ mysql_config_file_path }}"
+
+- name: Enable mysqld service
+  service:
+    name: mysqld
+    state: started
+    enabled: yes

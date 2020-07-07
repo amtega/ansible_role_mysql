@@ -1,5 +1,6 @@
 {{ ansible_managed | comment }}
 [mysqld]
+port                             = {{ mysql_port }}
 character-set-server             = {{ mysql_character-set-server }}
 collation-server                 = {{ mysql_collation-server }}
 datadir                          = {{ mysql_datadir }}
@@ -38,7 +39,7 @@ innodb-page-cleaners             = {{ mysql_innodb-page-cleaners }}
 internal_tmp_disk_storage_engine = {{ mysql_internal_tmp_disk_storage_engine }}
 query-cache-size                 = {{ mysql_query-cache-size }}
 query-cache-type                 = {{ mysql_query-cache-type }}
-{% fi %}
+{% endif %}
 
 # Slow queries logging.
 long-query-time                  = {{ mysql_long-query-time }}
@@ -49,13 +50,25 @@ slow-query-log-file              = {{ mysql_slow-query-log-file }}
 {% if mysql_replication %}
 # Replication parameters
 server-id                        = {{ mysql_server-id }}
-{% fi %}
+{% endif %}
 {% if mysql_server-id == 1 %}
 expire-logs-days                 = {{ mysql_expire-logs-days  }}
 log-bin                          = {{ mysql_log-bin }}
+{% if mysql_log-bin-index is defined %}
+log-bin-index                    = {{ mysql_log-bin-index }}
+{% endif %}
+{% if mysql_max_binlog_size is defined %}
+max_binlog_size                  = {{ mysql_max_binlog_size }}
+{% endif %}
+{% if mysql_binlog_format is defined %}
+binlog_format                    = {{ mysql_binlog_format }}
+{% endif %}
 {% else %}
 relay-log                        = {{ mysql_relay-log }}
-{% fi %}
+{% if mysql_relay-log-index is defined %}
+relay-log-index                    = {{ mysql_relay-log-index }}
+{% endif %}
+{% endif %}
 
 log-error                       = {{ mysql_log-error }}
 log_timestamps                  = {{ mysql_log_timestamps }}

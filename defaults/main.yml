@@ -1,16 +1,32 @@
 ---
 # Role default lower priority variables
-
-# Release to install
+# Switch to indicate if role install mysql
+mysql_install: yes
+# Release to install (55,56,57 and 80 are suported)
 mysql_release: "57"
 # Version to install. Only avaliable on CentOS / RHEL
 mysql_version: "5.7.18-1"
 # Freeze the packages to prevent updates
 mysql_freeze_version: true
+# Switch to indicate if role configure secure installation
+mysql_configure: true
+# Switch to indicate if role configure replication
+mysql_replication: true
 
+# Mysql privilege user credentials
+mysql_root_password: 123456
+# Indicate if you want create a file with credentials for root autologin
+mysql_create_user_autologin: yes
+# Restrict root user access
+mysql_root_allowed_hosts:
+  - "{{ ansible_fqdn }}"
+  - 127.0.0.1
+  - ::1
+  - localhost
 
 # Variables to fill the my.cnf file
 # General purpose
+mysql_port: 3306
 mysql_character-set-server: utf8
 mysql_collation-server: utf8_spanish_ci
 mysql_datadir: /var/lib/mysql
@@ -28,7 +44,6 @@ mysql_table-definition-cache: 4096
 mysql_table-open-cache: 4096
 mysql_thread-cache-size: 500
 mysql_tmp-table-size: 32M
-mysql_user: mysql
 mysql_validate-password-policy: LOW
 mysql_pid-file: /var/run/mysqld/mysqld.pid
 mysql_symbolic-links: 0
@@ -57,8 +72,21 @@ mysql_slow-query-log-file: /var/log/mysql/mysql-slow.log
 mysql_server-id: 1
 mysql_expire-logs-days: 1
 mysql_log-bin: /var/lib/mysql_binlog/mysql-bin.log
+# mysql_log-bin-index:
+# mysql_max_binlog_size:
+# mysql_binlog_format:
 mysql_relay-log: /var/lib/mysql_binlog/mysql-relay.log
+# mysql_relay-log-index:
 
+# Replication user
+mysql_replication_user: replicator
+mysql_replication_password: 123456
+mysql_replication_host: '%'
+mysql_replication_priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
+
+# Replication master info. Asume first inventory host by default
+mysql_replication_master: "{{ ansible_play_hosts[0] }}"
+mysql_replication_master_port: "{{ hostvars[ 'mysql_replication_master' ][ 'mysql_port' ] }}"
 
 # Only for releases 57 or lower
 mysql_internal_tmp_disk_storage_engine: MYISAM
