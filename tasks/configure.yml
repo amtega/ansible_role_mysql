@@ -29,6 +29,15 @@
     host_all: yes
     state: absent
 
+- name: Create Backup user
+  mysql_user:
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password}}"
+    user: "{{ mysql_backup_user }}"
+    password: "{{ mysql_backup_password}}"
+    priv: "{{ mysql_backup_priv }}"
+  when: mysql_backup_user is defined
+
 - name: Create .my.cnf file with root password credentials
   template:
     src: user.my.cnf.j2

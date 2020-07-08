@@ -16,7 +16,7 @@ mysql_replication: true
 # Mysql privilege user credentials
 mysql_root_password: 123456
 # Indicate if you want create a file with credentials for root autologin
-mysql_create_user_autologin: yes
+mysql_create_user_autologin: no
 # Restrict root user access
 mysql_root_allowed_hosts:
   - "{{ ansible_fqdn }}"
@@ -84,9 +84,16 @@ mysql_replication_password: 123456
 mysql_replication_host: '%'
 mysql_replication_priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
 
+# Backup user
+mysql_backup_user: dbbackup
+mysql_backup_password: 123456
+mysql_backup_priv: '*.*:SELECT,SHOW VIEW,SHOW DATABASES,LOCK TABLES,RELOAD,REPLICATION CLIENT,EXECUTE,PROCESS'
+
 # Replication master info. Asume first inventory host by default
 mysql_replication_master: "{{ ansible_play_hosts[0] }}"
 mysql_replication_master_port: "{{ hostvars[ 'mysql_replication_master' ][ 'mysql_port' ] }}"
+
+
 
 # Only for releases 57 or lower
 mysql_internal_tmp_disk_storage_engine: MYISAM
