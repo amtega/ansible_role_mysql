@@ -1,9 +1,16 @@
 ---
 # Role tasks
-- name: Set  password if needed
+- name: Try set password for first installation
   block:
+    - name: Estract temporary password for mysql 57 or 80
+      shell: "grep 'temporary password' /var/log/mysqld.log | awk '{ print $NF }'"
+      changed_when: no
+      register: mysql_extract_password
+
     - name: Set root password for localhost
       mysql_user:
+        login_user: root
+        login_password: "{{ mysql_extract_password.stdout }}"
         user: "{{ mysql_root_user }}"
         password: "{{ mysql_root_password }}"
   rescue:

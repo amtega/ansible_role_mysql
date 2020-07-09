@@ -2,9 +2,9 @@
 # Role dependencies
 
 galaxy_info:
-  role_name: role
+  role_name: amtega.mysql
   author: author name
-  description: role description
+  description: Install selected version of Mysql, with replication config option.
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
   min_ansible_version: 2.9
@@ -19,4 +19,16 @@ galaxy_info:
         - 30
   galaxy_tags: []
 
-dependencies: []
+dependencies:
+  - role: amtega.packages
+    vars:
+      packages_python:
+        all:
+          all:
+            pymysql: present
+
+  - role: amtega.check_platform
+    check_platform_distributions:
+      centos: 6
+      fedora: 29
+      rhel: 6
