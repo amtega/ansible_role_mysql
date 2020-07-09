@@ -11,7 +11,7 @@ mysql_freeze_version: true
 # Switch to indicate if role configure secure installation
 mysql_configure: true
 # Switch to indicate if role configure replication
-mysql_replication: true
+mysql_replication: false
 
 # Mysql privilege user credentials
 mysql_root_password: 123456
