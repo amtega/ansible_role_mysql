@@ -6,6 +6,8 @@ mysql_install: yes
 mysql_release: "57"
 # Version to install. Only avaliable on CentOS / RHEL
 mysql_version: "5.7.18-1"
+# Disable gpg signature check
+mysql_disable_gpg_check: yes
 # Freeze the packages to prevent updates
 mysql_freeze_version: true
 # Switch to indicate if role configure secure installation
@@ -14,7 +16,7 @@ mysql_configure: true
 mysql_replication: false
 
 # Mysql privilege user credentials
-mysql_root_password: 123456
+mysql_root_password: 'd3f4ultp4ssw0rd'
 # Indicate if you want create a file with credentials for root autologin
 mysql_create_user_autologin: no
 # Restrict root user access
@@ -27,66 +29,66 @@ mysql_root_allowed_hosts:
 # Variables to fill the my.cnf file
 # General purpose
 mysql_port: 3306
-mysql_character-set-server: utf8
-mysql_collation-server: utf8_spanish_ci
+mysql_character_set_server: utf8
+mysql_collation_server: utf8_spanish_ci
 mysql_datadir: /var/lib/mysql
-mysql_ignore-db-dir: lost+found
+mysql_ignore_db_dir: lost+found
 mysql_join_buffer_size: 256M
 mysql_key_buffer_size: 256M
-mysql_max-allowed-packet: 32M
-mysql_max-connect-errors: 1000000
-mysql_max-connections: 100
-mysql_max-heap-table-size: 32M
-mysql_open-files-limit: 65535
+mysql_max_allowed_packet: 32M
+mysql_max_connect_errors: 1000000
+mysql_max_connections: 100
+mysql_max_heap_table_size: 32M
+mysql_open_files_limit: 65535
 mysql_socket: /var/lib/mysql/mysql.sock
 mysql_sort_buffer_size: 64M
-mysql_table-definition-cache: 4096
-mysql_table-open-cache: 4096
-mysql_thread-cache-size: 500
-mysql_tmp-table-size: 32M
-mysql_validate-password-policy: LOW
-mysql_pid-file: /var/run/mysqld/mysqld.pid
-mysql_symbolic-links: 0
+mysql_table_definition_cache: 4096
+mysql_table_open_cache: 4096
+mysql_thread_cache_size: 500
+mysql_tmp_table_size: 32M
+mysql_validate_password_policy: LOW
+mysql_pid_file: /var/run/mysqld/mysqld.pid
+mysql_symbolic_links: 0
 
 # Innodb variables
-mysql_innodb-buffer-pool-instances: 2
-mysql_innodb-buffer-pool-size: 600M
-mysql_innodb-file-per-table: 1
-mysql_innodb-flush-log-at-trx-commit: 1
-mysql_innodb-flush-method: O_DIRECT
-mysql_innodb-log-files-in-group: 2
-mysql_innodb-log-file-size: 512M
+mysql_innodb_buffer_pool_instances: 2
+mysql_innodb_buffer_pool_size: 600M
+mysql_innodb_file_per_table: 1
+mysql_innodb_flush_log_at_trx_commit: 1
+mysql_innodb_flush_method: O_DIRECT
+mysql_innodb_log_files_in_group: 2
+mysql_innodb_log_file_size: 512M
 mysql_innodb_temp_data_file_path: "../mysql_tmp/ibtmp1:50M:autoextend:max:15G"
-mysql_innodb-page-cleaners: 2
+mysql_innodb_page_cleaners: 2
 
 # Log
 mysql_log_timestamps: system
-mysql_log-error: /var/log/mysql/mysqld.log
+mysql_log_error: /var/log/mysql/mysqld.log
 
 # Slow query
-mysql_long-query-time: 3
-mysql_slow-query-log: 1
-mysql_slow-query-log-file: /var/log/mysql/mysql-slow.log
+mysql_long_query_time: 3
+mysql_slow_query_log: 1
+mysql_slow_query_log_file: /var/log/mysql/mysql-slow.log
 
 # Replication
-mysql_server-id: 1
-mysql_expire-logs-days: 1
-mysql_log-bin: /var/lib/mysql_binlog/mysql-bin.log
+mysql_server_id: 1
+mysql_expire_logs_days: 1
+mysql_log_bin: /var/lib/mysql_binlog/mysql-bin.log
 # mysql_log-bin-index:
 # mysql_max_binlog_size:
 # mysql_binlog_format:
-mysql_relay-log: /var/lib/mysql_binlog/mysql-relay.log
+mysql_relay_log: /var/lib/mysql_binlog/mysql-relay.log
 # mysql_relay-log-index:
 
 # Replication user
 mysql_replication_user: replicator
-mysql_replication_password: 123456
+mysql_replication_password: 'd3f4ultp4ssw0rd'
 mysql_replication_host: '%'
 mysql_replication_priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
 
 # Backup user
 mysql_backup_user: dbbackup
-mysql_backup_password: 123456
+mysql_backup_password: 'd3f4ultp4ssw0rd'
 mysql_backup_priv: '*.*:SELECT,SHOW VIEW,SHOW DATABASES,LOCK TABLES,RELOAD,REPLICATION CLIENT,EXECUTE,PROCESS'
 
 # Replication master info. Asume first inventory host by default
@@ -97,5 +99,5 @@ mysql_replication_master_port: "{{ hostvars[ 'mysql_replication_master' ][ 'mysq
 
 # Only for releases 57 or lower
 mysql_internal_tmp_disk_storage_engine: MYISAM
-mysql_query-cache-size: 0
-mysql_query-cache-type: OFF
+mysql_query_cache_size: 0
+mysql_query_cache_type: "OFF"

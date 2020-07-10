@@ -1,5 +1,6 @@
 ---
 # Role variables
+mysql_repo_url_download: 'http://dev.mysql.com/get'
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 mysql_config_file_path: /etc/my.cnf
 mysql_innodb_temp_dir: /var/lib/mysql_tmp

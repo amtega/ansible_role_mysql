@@ -3,7 +3,7 @@
 - name: Ensure replication user exist on master
   mysql_user:
     login_user: "{{ mysql_root_user }}"
-    login_password: "{{ mysql_root_password}}"
+    login_password: "{{ mysql_root_password }}"
     user: "{{ mysql_replication_user }}"
     password: "{{ mysql_replication_password }}"
     host: "{{ mysql_replication_host }}"
@@ -11,7 +11,7 @@
   delegate_to: "{{ mysql_replication_master }}"
 
 - name: Get slave status
-  msyql_replication:
+  mysql_replication:
     mode: getslave
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
@@ -31,7 +31,7 @@
     - name: Enable remote backup user
       mysql_user:
         login_user: "{{ mysql_root_user }}"
-        login_password: "{{ mysql_root_password}}"
+        login_password: "{{ mysql_root_password }}"
         user: "{{ mysql_backup_user }}"
         password: "{{ mysql_backup_password }}"
         host: '%'
@@ -69,7 +69,7 @@
         master_log_pos: "{{ master_status.Position }}"
 
     - name: Start slave
-      msyql_replication:
+      mysql_replication:
         mode: startslave
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
@@ -77,7 +77,7 @@
     - name: Disable remote backup user
       mysql_user:
         login_user: "{{ mysql_root_user }}"
-        login_password: "{{ mysql_root_password}}"
+        login_password: "{{ mysql_root_password }}"
         user: "{{ mysql_backup_user }}"
         host: '%'
         state: absent

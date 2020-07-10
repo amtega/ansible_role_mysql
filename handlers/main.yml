@@ -1,2 +1,7 @@
 ---
 # Role handlers
+- name: Mysql restart mysqld
+  service:
+    name: mysqld
+    state: restarted
+  listen: mysqld restart

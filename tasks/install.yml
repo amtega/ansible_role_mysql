@@ -8,7 +8,7 @@
 
 - name: Install mysql community repository package
   yum:
-    name: "http://dev.mysql.com/get/{{ mysql_repository_rpm }}"
+    name: "{{ mysql_repo_url_download }}/{{ mysql_repository_rpm }}"
     state: present
     disable_gpg_check: yes
 
@@ -26,8 +26,14 @@
     enablerepo: "mysql{{ mysql_release }}-community"
     disable_gpg_check: "{{ mysql_disable_gpg_check | bool }}"
   loop: "{{ mysql_packages }}"
-  loop_caontrol:
+  loop_control:
     loop_var: package
+
+- name: start mysql service with defaults
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
 
 - name: Create custom dirs
   file:
@@ -42,18 +48,12 @@
     - "{{ mysql_log_dir }}"
   loop_control:
     loop_var: mysql_custom_dir
+  notify: mysqld restart
 
 - name: Set configuration file
   template:
     src: my.cnf.j2
     dest: "{{ mysql_config_file_path }}"
+  notify: mysqld restart
 
-- name: Enable mysqld service
-  service:
-    name: mysqld
-    state: started
-    enabled: yes
-
-- name: Wait for mysqld
-  wait_for:
-    port: "{{ mysql_port }}"
+- meta: flush_handlers
