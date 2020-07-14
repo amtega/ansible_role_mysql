@@ -35,6 +35,7 @@
     user: ""
     host_all: yes
     state: absent
+  no_log: True
 
 - name: Create Backup user
   mysql_user:

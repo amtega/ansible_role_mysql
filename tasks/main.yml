@@ -13,7 +13,7 @@
 
     - include_tasks: replication.yml
       when:
-        - mysql_replication
+        - mysql_implement_replication
         - mysql_server_id > 1
       tags:
         - role::mysql::replication

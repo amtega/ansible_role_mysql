@@ -47,7 +47,7 @@ slow-query-log                   = {{ mysql_slow_query_log  }}
 slow-query-log-file              = {{ mysql_slow_query_log_file }}
 
 
-{% if mysql_replication %}
+{% if mysql_implement_replication %}
 # Replication parameters
 server-id                        = {{ mysql_server_id }}
 {% if mysql_server_id == 1 %}

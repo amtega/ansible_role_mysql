@@ -13,7 +13,7 @@ mysql_freeze_version: true
 # Switch to indicate if role configure secure installation
 mysql_configure: true
 # Switch to indicate if role configure replication
-mysql_replication: false
+mysql_implement_replication: false
 
 # Mysql privilege user credentials
 mysql_root_password: 'd3f4ultp4ssw0rd'
@@ -21,7 +21,6 @@ mysql_root_password: 'd3f4ultp4ssw0rd'
 mysql_create_user_autologin: no
 # Restrict root user access
 mysql_root_allowed_hosts:
-  - "{{ ansible_fqdn }}"
   - 127.0.0.1
   - ::1
   - localhost
@@ -93,7 +92,7 @@ mysql_backup_priv: '*.*:SELECT,SHOW VIEW,SHOW DATABASES,LOCK TABLES,RELOAD,REPLI
 
 # Replication master info. Asume first inventory host by default
 mysql_replication_master: "{{ ansible_play_hosts[0] }}"
-mysql_replication_master_port: "{{ hostvars[ 'mysql_replication_master' ][ 'mysql_port' ] }}"
+mysql_replication_master_port: "{{ hostvars[ mysql_replication_master ][ 'mysql_port' ] }}"
 
 
 

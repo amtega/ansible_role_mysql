@@ -4,4 +4,16 @@
   hosts: molecule_hosts
   gather_facts: no
   tasks:
-    - debug: msg="Verify to be done"
+
+    - name: Get slave status
+      mysql_replication:
+        mode: getslave
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+      when:
+        - mysql_implement_replication
+        - mysql_server_id > 1
+      register: mysql_verify_replication
+
+    - debug:
+        var: mysql_verify_replication

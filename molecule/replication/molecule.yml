@@ -29,12 +29,27 @@ lint: |
 platforms:
   - name: "mysql-master"
     image: centos:7
+    dockerfile: ../resources/Dockerfile.j2
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     groups:
       - molecule_hosts
       - molecule_hosts_centos
-      - molecule_hosts_centos_6
+      - molecule_hosts_centos_7
   - name: "mysql-slave"
     image: centos:7
+    dockerfile: ../resources/Dockerfile.j2
+    command: /sbin/init
+    etc_hosts: "{'mysql-master': '172.17.0.2'}"
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     groups:
       - molecule_hosts
       - molecule_hosts_centos
@@ -46,8 +61,17 @@ provisioner:
       callback_whitelist: profile_tasks
       action_plugins: $PWD/action_plugins
   inventory:
-    hosts:
+    host_vars:
+      mysql-master:
+        mysql_server_id: 1
+      mysql-slave:
+        mysql_server_id: 2
+        mysql_replication_master: mysql-master
+        mysql_replication_master_port: 3306
+    group_vars:
       molecule_hosts:
-        vars:
+          mysql_implement_replication: true
+          mysql_root_user: root
+          mysql_root_password: t3stp4ssw0rd
 verifier:
   name: ansible
