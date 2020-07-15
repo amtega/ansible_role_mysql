@@ -5,12 +5,3 @@
   gather_facts: yes
   tasks:
     - debug: msg="Tasks to prepare host for test"
-    
-    # - debug:
-    #     var: hostvars['mysql-master']
-    # - name: Add master entry into /etc/hosts
-    #   lineinfile:
-    #     dest: /etc/hosts
-    #     regexp: '.*mysql-master$'
-    #     line: "{{ hostvars['mysql-master']['ansible_default_ipv4']['address'] }} mysql-master"
-    #     state: present

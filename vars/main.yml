@@ -9,3 +9,5 @@ mysql_log_dir: /var/log/mysql
 mysql_user: mysql
 mysql_group: mysql
 mysql_root_user: root
+mysql_user_autologin_file: /root/.mylogin.cnf
+mysql_logrotate_file_path: /etc/logrotate.d/mysql

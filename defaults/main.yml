@@ -8,17 +8,14 @@ mysql_release: "57"
 mysql_version: "5.7.18-1"
 # Disable gpg signature check
 mysql_disable_gpg_check: yes
-# Freeze the packages to prevent updates
-mysql_freeze_version: true
 # Switch to indicate if role configure secure installation
 mysql_configure: true
 # Switch to indicate if role configure replication
 mysql_implement_replication: false
-
 # Mysql privilege user credentials
 mysql_root_password: 'd3f4ultp4ssw0rd'
 # Indicate if you want create a file with credentials for root autologin
-mysql_create_user_autologin: no
+mysql_create_user_autologin: true
 # Restrict root user access
 mysql_root_allowed_hosts:
   - 127.0.0.1

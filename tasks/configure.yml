@@ -16,6 +16,29 @@
     - debug:
         msg: ' {{ mysql_root_user }} password is already set'
 
+- name: Configure root user autologin
+  block:
+    - name: Check if root user autologin file already exists
+      stat:
+        path: '{{ mysql_user_autologin_file }}'
+      register: mysql_user_autologin_file_check
+
+    - name: create configuration .mylogin.cnf for User mysql
+      no_log: True
+      expect:
+         command: mysql_config_editor set --user="{{ mysql_root_user }}" --password
+         responses:
+           'Enter password': '"{{ mysql_root_password }}"'
+      when: not mysql_user_autologin_file_check.stat.exists
+
+    - name: configure logrotate
+      template:
+        src: mysql_logrotate.j2
+        dest: "{{ mysql_logrotate_file_path }}"
+      when: not mysql_user_autologin_file_check.stat.exists
+
+  when: mysql_create_user_autologin
+
 - name: Secure all root acounts
   mysql_user:
     login_user: "{{ mysql_root_user }}"
@@ -46,12 +69,6 @@
     priv: "{{ mysql_backup_priv }}"
   when: mysql_backup_user is defined
   no_log: True
-
-- name: Create .my.cnf file with root password credentials
-  template:
-    src: user.my.cnf.j2
-    dest: '/root/.my.cnf'
-  when: mysql_create_user_autologin
 
 - name: Remove test database
   mysql_db:

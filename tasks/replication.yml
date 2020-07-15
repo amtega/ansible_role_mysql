@@ -77,14 +77,15 @@
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
 
-    # - name: Disable remote backup user
-    #   mysql_user:
-    #     login_user: "{{ mysql_root_user }}"
-    #     login_password: "{{ mysql_root_password }}"
-    #     user: "{{ mysql_backup_user }}"
-    #     host: '%'
-    #     state: absent
-    #   delegate_to: "{{ mysql_replication_master }}"
+    - name: Disable remote backup user
+      mysql_user:
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+        user: "{{ mysql_backup_user }}"
+        host: '%'
+        state: absent
+      delegate_to: "{{ mysql_replication_master }}"
+      no_log: True
 
   when: (slave_status.Is_Slave is defined and not slave_status.Is_Slave) or
         (slave_status.Is_Slave is not defined and slave_status is failed)
