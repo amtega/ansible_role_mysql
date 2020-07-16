@@ -17,5 +17,10 @@
         - mysql_server_id > 1
       tags:
         - role::mysql::replication
+
+    - include_tasks: cleanup.yml
+      tags:
+        - role::mysql::cleanup
+
   tags:
     - role::mysql
