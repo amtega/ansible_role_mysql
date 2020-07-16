@@ -29,7 +29,7 @@ dependencies:
             MySQL-python: present
         fedora:
           all:
-            python3-PyMySQL: absent
+            python3-PyMySQL: present
         rhel:
           all:
             MySQL-python: present

@@ -2,6 +2,6 @@
 
 - name: Prepare
   hosts: molecule_hosts
-  gather_facts: yes
+  gather_facts: no
   tasks:
     - debug: msg="Tasks to prepare host for test"

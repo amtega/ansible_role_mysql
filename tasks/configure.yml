@@ -13,7 +13,8 @@
       no_log: True
 
   rescue:
-    - debug:
+    - name: Rescue task.
+      debug:
         msg: ' {{ mysql_root_user }} password is already set'
 
 - name: Configure root user autologin

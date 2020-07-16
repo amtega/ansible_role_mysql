@@ -33,12 +33,21 @@
       delegate_to: "{{ mysql_replication_master }}"
       no_log: True
 
+    - name: Get master status
+      mysql_replication:
+        mode: getmaster
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+      delegate_to: "{{ mysql_replication_master }}"
+      register: master_status
+
     - name: Dump master data
       mysql_db:
         login_user: "{{ mysql_backup_user }}"
         login_password: "{{ mysql_backup_password }}"
         login_host: "{{ mysql_replication_master }}"
         login_port: "{{ mysql_replication_master_port }}"
+        single_transaction: yes
         state: dump
         name: all
         target: /tmp/dump.sql
@@ -50,14 +59,6 @@
         state: import
         name: all
         target: /tmp/dump.sql
-
-    - name: Get master status
-      mysql_replication:
-        mode: getmaster
-        login_user: "{{ mysql_root_user }}"
-        login_password: "{{ mysql_root_password }}"
-      delegate_to: "{{ mysql_replication_master }}"
-      register: master_status
 
     - name: Set master binlog info
       mysql_replication:
