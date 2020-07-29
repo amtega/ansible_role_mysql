@@ -1,0 +1,18 @@
+---
+# Cleanup tasks
+
+- name: Remove first install log if dont use it.
+  file:
+    path: /var/log/mysqld.log
+    state: absent
+  when:
+    - mysql_log_error is defined
+    - mysql_log_error != "/var/log/mysqld.log"
+
+- name: clean temporary Dump
+  file:
+    path: /tmp/dump.sql
+    state: absent
+  when:
+    - mysql_implement_replication
+    - mysql_server_id > 1

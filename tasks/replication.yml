@@ -1,0 +1,92 @@
+---
+# Role tasks
+- name: Ensure replication user exist on master
+  mysql_user:
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+    user: "{{ mysql_replication_user }}"
+    password: "{{ mysql_replication_password }}"
+    host: "{{ mysql_replication_host }}"
+    priv: "{{ mysql_replication_priv }}"
+  delegate_to: "{{ mysql_replication_master }}"
+  no_log: True
+
+- name: Get slave status
+  mysql_replication:
+    mode: getslave
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+  ignore_errors: true
+  register: slave_status
+
+- name: Configure replication
+  block:
+
+    - name: Enable remote backup user
+      mysql_user:
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+        user: "{{ mysql_backup_user }}"
+        password: "{{ mysql_backup_password }}"
+        host: '%'
+        priv: "{{ mysql_backup_priv }}"
+      delegate_to: "{{ mysql_replication_master }}"
+      no_log: True
+
+    - name: Get master status
+      mysql_replication:
+        mode: getmaster
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+      delegate_to: "{{ mysql_replication_master }}"
+      register: master_status
+
+    - name: Dump master data
+      mysql_db:
+        login_user: "{{ mysql_backup_user }}"
+        login_password: "{{ mysql_backup_password }}"
+        login_host: "{{ mysql_replication_master }}"
+        login_port: "{{ mysql_replication_master_port }}"
+        single_transaction: yes
+        state: dump
+        name: all
+        target: /tmp/dump.sql
+
+    - name: Import master data
+      mysql_db:
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+        state: import
+        name: all
+        target: /tmp/dump.sql
+
+    - name: Set master binlog info
+      mysql_replication:
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+        mode: changemaster
+        master_host: "{{ mysql_replication_master }}"
+        master_port: "{{ mysql_replication_master_port }}"
+        master_user: "{{ mysql_replication_user }}"
+        master_password: "{{ mysql_replication_password }}"
+        master_log_file: "{{ master_status.File }}"
+        master_log_pos: "{{ master_status.Position }}"
+
+    - name: Start slave
+      mysql_replication:
+        mode: startslave
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+
+    - name: Disable remote backup user
+      mysql_user:
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+        user: "{{ mysql_backup_user }}"
+        host: '%'
+        state: absent
+      delegate_to: "{{ mysql_replication_master }}"
+      no_log: True
+
+  when: (slave_status.Is_Slave is defined and not slave_status.Is_Slave) or
+        (slave_status.Is_Slave is not defined and slave_status is failed)

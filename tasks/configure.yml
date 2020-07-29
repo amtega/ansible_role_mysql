@@ -1,0 +1,79 @@
+---
+# Role tasks
+- name: Try set password for first installation
+  block:
+    - name: Estract temporary password for mysql 57 or 80
+      shell: "grep 'temporary password' /var/log/mysqld.log | awk '{ print $NF }'"
+      changed_when: no
+      register: mysql_extract_password
+      no_log: True
+
+    - name: Set new password from temporary password
+      shell: 'mysql -e "SET PASSWORD = PASSWORD(''{{ mysql_root_password }}'');" --connect-expired-password -uroot -p"{{ mysql_extract_password.stdout }}"'
+      no_log: True
+
+  rescue:
+    - name: Rescue task.
+      debug:
+        msg: ' {{ mysql_root_user }} password is already set'
+
+- name: Configure root user autologin
+  block:
+    - name: Check if root user autologin file already exists
+      stat:
+        path: '{{ mysql_user_autologin_file }}'
+      register: mysql_user_autologin_file_check
+
+    - name: create configuration .mylogin.cnf for User mysql
+      no_log: True
+      expect:
+         command: mysql_config_editor set --user="{{ mysql_root_user }}" --password
+         responses:
+           'Enter password': '"{{ mysql_root_password }}"'
+      when: not mysql_user_autologin_file_check.stat.exists
+
+    - name: configure logrotate
+      template:
+        src: mysql_logrotate.j2
+        dest: "{{ mysql_logrotate_file_path }}"
+      when: not mysql_user_autologin_file_check.stat.exists
+
+  when: mysql_create_user_autologin
+
+- name: Secure all root acounts
+  mysql_user:
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+    user: "{{ mysql_root_user }}"
+    password: "{{ mysql_root_password }}"
+    host: "{{ mysql_host_allowed }}"
+  loop: "{{ mysql_root_allowed_hosts }}"
+  loop_control:
+    loop_var: mysql_host_allowed
+  no_log: True
+
+- name: Delete all anonymous users
+  mysql_user:
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+    user: ""
+    host_all: yes
+    state: absent
+  no_log: True
+
+- name: Create Backup user
+  mysql_user:
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+    user: "{{ mysql_backup_user }}"
+    password: "{{ mysql_backup_password }}"
+    priv: "{{ mysql_backup_priv }}"
+  when: mysql_backup_user is defined
+  no_log: True
+
+- name: Remove test database
+  mysql_db:
+   login_user: "{{ mysql_root_user }}"
+   login_password: "{{ mysql_root_password }}"
+   name: test
+   state: absent

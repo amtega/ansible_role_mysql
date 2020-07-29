@@ -1,0 +1,28 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+
+    - name: Get slave status
+      mysql_replication:
+        mode: getslave
+        login_user: "{{ mysql_root_user }}"
+        login_password: "{{ mysql_root_password }}"
+      when:
+        - mysql_implement_replication
+        - mysql_server_id > 1
+      register: mysql_verify_replication
+
+    - name: Make sure replication is working
+      assert:
+        that:
+          - mysql_verify_replication.Slave_IO_Running == "Yes"
+          - mysql_verify_replication.Slave_SQL_Running == "Yes"
+          - mysql_verify_replication.Seconds_Behind_Master == 0
+          - mysql_verify_replication.Slave_IO_State is search("Waiting for master")
+          - mysql_verify_replication.Slave_SQL_Running_State is search("Slave has read all relay log")
+      when:
+        - mysql_implement_replication
+        - mysql_server_id > 1
