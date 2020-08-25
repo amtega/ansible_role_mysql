@@ -1,29 +1,64 @@
 ---
 # Role default lower priority variables
-# Switch to indicate if role install mysql
-mysql_install: yes
-# Release to install (55,56,57 and 80 are suported)
-mysql_release: "57"
+
+# ==============================================================================
+# Main role settings
+# ==============================================================================
+
 # Version to install. Only avaliable on CentOS / RHEL
-mysql_version: "5.7.18-1"
+
+mysql_version: "5.7"
+
 # Disable gpg signature check
+
 mysql_disable_gpg_check: yes
-# Switch to indicate if role configure secure installation
-mysql_configure: true
-# Switch to indicate if role configure replication
-mysql_implement_replication: false
-# Mysql privilege user credentials
-mysql_root_password: 'd3f4ultp4ssw0rd'
-# Indicate if you want create a file with credentials for root autologin
-mysql_create_user_autologin: true
+
+# Indicate if role must configure replication
+
+mysql_replication: no
+
+# Mysql root password
+
+mysql_root_password: changme
+
+# Indicate if a file with credentials for root autologin must be created
+
+mysql_create_user_autologin: yes
+
 # Restrict root user access
+
 mysql_root_allowed_hosts:
   - 127.0.0.1
   - ::1
   - localhost
 
-# Variables to fill the my.cnf file
-# General purpose
+# Log rotation settings
+
+mysql_logrotate_config_path: /etc/logrotate.d/mysql
+
+mysql_logrotate_config: |
+  compress
+  monthly
+  rotate 6
+  create 600 mysql mysql
+  postrotate
+      # just if mysqld is really running
+      if test -x /usr/bin/mysqladmin && /usr/bin/mysqladmin ping &>/dev/null
+      then
+         env HOME=/root/ /usr/bin/mysqladmin flush-logs
+      fi
+  endscript
+
+# Hide sensitive information
+
+mysql_no_log: yes
+
+# ==============================================================================
+# Variables to fill my.cnf file. See mysql documentation for details
+# ==============================================================================
+
+# General purpose settings
+
 mysql_port: 3306
 mysql_character_set_server: utf8
 mysql_collation_server: utf8_spanish_ci
@@ -46,7 +81,8 @@ mysql_validate_password_policy: LOW
 mysql_pid_file: /var/run/mysqld/mysqld.pid
 mysql_symbolic_links: 0
 
-# Innodb variables
+# Innodb settings
+
 mysql_innodb_buffer_pool_instances: 2
 mysql_innodb_buffer_pool_size: 600M
 mysql_innodb_file_per_table: 1
@@ -57,16 +93,19 @@ mysql_innodb_log_file_size: 512M
 mysql_innodb_temp_data_file_path: "../mysql_tmp/ibtmp1:50M:autoextend:max:15G"
 mysql_innodb_page_cleaners: 2
 
-# Log
-mysql_log_timestamps: system
-mysql_log_error: /var/log/mysql/mysqld.log
+# Log settings
 
-# Slow query
+mysql_log_timestamps: system
+mysql_log_error: /var/log/mysqld_error.log
+
+# Slow query settings
+
 mysql_long_query_time: 3
 mysql_slow_query_log: 1
 mysql_slow_query_log_file: /var/log/mysql/mysql-slow.log
 
-# Replication
+# Replication settings
+
 mysql_server_id: 1
 mysql_expire_logs_days: 1
 mysql_log_bin: /var/lib/mysql_binlog/mysql-bin.log
@@ -76,24 +115,41 @@ mysql_log_bin: /var/lib/mysql_binlog/mysql-bin.log
 mysql_relay_log: /var/lib/mysql_binlog/mysql-relay.log
 # mysql_relay-log-index:
 
-# Replication user
+# Replication user settings
+
 mysql_replication_user: replicator
-mysql_replication_password: 'd3f4ultp4ssw0rd'
+mysql_replication_password: changeme
 mysql_replication_host: '%'
-mysql_replication_priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
+mysql_replication_privleges:
+  "*":
+    "*":
+      - REPLICATION SLAVE
+      - REPLICATION CLIENT
 
-# Backup user
+# Backup user settings
+
 mysql_backup_user: dbbackup
-mysql_backup_password: 'd3f4ultp4ssw0rd'
-mysql_backup_priv: '*.*:SELECT,SHOW VIEW,SHOW DATABASES,LOCK TABLES,RELOAD,REPLICATION CLIENT,EXECUTE,PROCESS'
+mysql_backup_password: changeme
+mysql_backup_privileges:
+  "*":
+    "*":
+      - SELECT
+      - SHOW VIEW
+      - SHOW DATABASES
+      - LOCK TABLES
+      - RELOAD
+      - REPLICATION CLIENT
+      - EXECUTE
+      - PROCESS
 
-# Replication master info. Asume first inventory host by default
+# Replication master settings. Asume first inventory host by default
+
 mysql_replication_master: "{{ ansible_play_hosts[0] }}"
-mysql_replication_master_port: "{{ hostvars[ mysql_replication_master ][ 'mysql_port' ] }}"
-
-
+mysql_replication_master_port: >-
+  {{ hostvars[mysql_replication_master][ 'mysql_port' ] }}
 
 # Only for releases 57 or lower
+
 mysql_internal_tmp_disk_storage_engine: MYISAM
 mysql_query_cache_size: 0
 mysql_query_cache_type: "OFF"

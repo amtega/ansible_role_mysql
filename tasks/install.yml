@@ -1,59 +1,67 @@
 ---
 # Role tasks
-- name: Load OS specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution | lower }}.yml"
-    - "{{ ansible_os_family | lower }}.yml"
 
-- name: Install mysql community repository package
-  yum:
-    name: "{{ mysql_repo_url_download }}/{{ mysql_repository_rpm }}"
-    state: present
-    disable_gpg_check: yes
+- block:
+    - name: Load operating system specific variables
+      include_vars: "{{ lookup('first_found', mysql_vars_files) }}"
+      vars:
+        mysql_vars_files:
+          - "vars/{{ ansible_facts.distribution | lower }}.yml"
+          - "vars/{{ ansible_facts.os_family | lower }}.yml"
 
-- name: Disable all releases repositories by default
-  ini_file:
-      path: "{{ mysql_repo_file_path }}"
-      section: "mysql80-community"
-      option: "enabled"
-      value: "0"
+    - name: Install mysql community repository package
+      yum:
+        name: "{{ mysql_repo_url_download }}/{{ mysql_repo_rpm }}"
+        state: present
+        disable_gpg_check: yes
 
-- name: Install selected version
-  yum:
-    name: "{{ package }}"
-    state: present
-    enablerepo: "mysql{{ mysql_release }}-community"
-    disable_gpg_check: "{{ mysql_disable_gpg_check | bool }}"
-  loop: "{{ mysql_packages }}"
-  loop_control:
-    loop_var: package
+    - name: Disable all mysql releases repositories
+      ini_file:
+        path: "{{ mysql_repo_file_path }}"
+        section: "mysql80-community"
+        option: "enabled"
+        value: "0"
 
-- name: start mysql service with defaults
-  service:
-    name: mysqld
-    state: started
-    enabled: yes
+    - name: Install selected mysql version
+      yum:
+        name: "{{ package }}"
+        state: present
+        enablerepo: "mysql{{ mysql_release }}-community"
+        disable_gpg_check: "{{ mysql_disable_gpg_check | bool }}"
+      loop: "{{ mysql_packages }}"
+      loop_control:
+        loop_var: package
 
-- name: Create custom dirs
-  file:
-    path: "{{ mysql_custom_dir }}"
-    state: directory
-    mode: '0755'
-    owner: "{{ mysql_user }}"
-    group: "{{ mysql_group }}"
-  loop:
-    - "{{ mysql_innodb_temp_dir }}"
-    - "{{ mysql_binlog_dir }}"
-    - "{{ mysql_log_dir }}"
-  loop_control:
-    loop_var: mysql_custom_dir
-  notify: mysqld restart
+    - name: Start mysql service with defaults
+      service:
+        name: mysqld
+        state: started
+        enabled: yes
 
-- name: Set configuration file
-  template:
-    src: my.cnf.j2
-    dest: "{{ mysql_config_file_path }}"
-  notify: mysqld restart
+    - name: Setup extra directories
+      file:
+        path: "{{ mysql_extra_dir }}"
+        state: directory
+        owner: "{{ mysql_user }}"
+        group: "{{ mysql_group }}"
+        mode: "0755"
+      loop:
+        - "{{ mysql_innodb_temp_dir }}"
+        - "{{ mysql_binlog_dir }}"
+        - "{{ mysql_log_dir }}"
+      loop_control:
+        loop_var: mysql_extra_dir
 
-- meta: flush_handlers
+    - name: Setup mysql configuration file
+      template:
+        src: my.cnf.j2
+        dest: "{{ mysql_config_file_path }}"
+      register: mysql_setup_my_cnf_result
+
+    - name: Restart mysql service to apply settings
+      service:
+        name: mysqld
+        state: restarted
+        enabled: yes
+      when: mysql_setup_my_cnf_result is changed
+  environment: "{{ proxy_client_environment }}"

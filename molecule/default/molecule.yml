@@ -29,7 +29,6 @@ lint: |
 platforms:
   - name: "centos6-${INSTANCE_UUID:-1}"
     image: centos:6
-    dockerfile: ../resources/Dockerfile-centos6.j2
     groups:
       - molecule_hosts
       - molecule_hosts_centos

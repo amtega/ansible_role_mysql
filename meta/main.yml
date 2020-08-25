@@ -3,8 +3,8 @@
 
 galaxy_info:
   role_name: amtega.mysql
-  author: author name
-  description: Install selected version of Mysql, with replication config option.
+  author: José Enrique Mourón Regueira / Juan Antonio Valiño García
+  description: Setup mysql with replication config
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
   min_ansible_version: 2.9
@@ -20,6 +20,15 @@ galaxy_info:
   galaxy_tags: []
 
 dependencies:
+  - role: amtega.check_platform
+    check_platform_distributions:
+      centos: 6
+      fedora: 29
+      rhel: 6
+
+  - role: amtega.proxy_client
+    vars:
+      proxy_client_permanent: no
 
   - role: amtega.packages
     vars:
@@ -37,9 +46,3 @@ dependencies:
         all:
           all:
             pexpect: latest
-
-  - role: amtega.check_platform
-    check_platform_distributions:
-      centos: 6
-      fedora: 29
-      rhel: 6

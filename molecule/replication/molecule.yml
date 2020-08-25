@@ -70,7 +70,7 @@ provisioner:
         mysql_replication_master_port: 3306
     group_vars:
       molecule_hosts:
-          mysql_implement_replication: true
+          mysql_replication: yes
           mysql_root_user: root
           mysql_root_password: t3stp4ssw0rd
 verifier:

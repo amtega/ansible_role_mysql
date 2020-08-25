@@ -1,20 +1,43 @@
 ---
 # Role variables
-# Meta repository info
-mysql_repo_url_download: 'http://dev.mysql.com/get'
+
+mysql_release: "{{ mysql_version.split('.')[0:1] | join }}"
+
+# Repository info
+
+mysql_repo_url_download: http://dev.mysql.com/get
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
+
+# Mysql packages
+
+mysql_packages:
+  - >-
+    {{ "mysql-community-server-"
+       + mysql_version }}
+
 # Mysql config file
+
 mysql_config_file_path: /etc/my.cnf
+
 # Mysql extra dirs
+
 mysql_innodb_temp_dir: /var/lib/mysql_tmp
 mysql_binlog_dir: /var/lib/mysql_binlog
 mysql_log_dir: /var/log/mysql
-# Mysql syste user, for directory creation purposes
+
+# Mysql install log file
+
+mysql_install_log_path: "/var/log/mysqld.log"
+
+# Mysql system user and group
+
 mysql_user: mysql
 mysql_group: mysql
+
 # Mysql server root account
+
 mysql_root_user: root
-# Path for root user auto-login file
+
+# Path to root user auto-login config file
+
 mysql_user_autologin_file: /root/.mylogin.cnf
-# Path to mysql logrotate file 
-mysql_logrotate_file_path: /etc/logrotate.d/mysql
