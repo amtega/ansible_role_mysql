@@ -29,14 +29,12 @@ lint: |
 platforms:
   - name: "centos6-${INSTANCE_UUID:-1}"
     image: centos:6
-    dockerfile: ../resources/Dockerfile-centos6.j2
     groups:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_6
   - name: "centos7-${INSTANCE_UUID:-1}"
     image: centos:7
-    dockerfile: ../resources/Dockerfile.j2
     command: /sbin/init
     tmpfs:
       - /run
@@ -47,9 +45,20 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
-  - name: "fedora29-${INSTANCE_UUID:-1}"
-    image: fedora:29
-    dockerfile: ../resources/Dockerfile.j2
+  - name: "centos8-${INSTANCE_UUID:-1}"
+    image: centos:8
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - molecule_hosts
+      - molecule_hosts_centos
+      - molecule_hosts_centos_8
+  - name: "fedora31-${INSTANCE_UUID:-1}"
+    image: fedora:31
     command: /sbin/init
     tmpfs:
       - /run
@@ -59,10 +68,9 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_fedora
-      - molecule_hosts_fedora_29
-  - name: "fedora30-${INSTANCE_UUID:-1}"
-    image: fedora:30
-    dockerfile: ../resources/Dockerfile.j2
+      - molecule_hosts_fedora_31
+  - name: "fedora32-${INSTANCE_UUID:-1}"
+    image: fedora:32
     command: /sbin/init
     tmpfs:
       - /run
@@ -72,7 +80,7 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_fedora
-      - molecule_hosts_fedora_30
+      - molecule_hosts_fedora_32
 provisioner:
   name: ansible
   config_options:
@@ -88,5 +96,20 @@ provisioner:
       molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3
+      molecule_hosts_centos_6:
+        vars:
+          mysql_version: 5.7
+      molecule_hosts_centos_7:
+        vars:
+          mysql_version: 5.7
+      molecule_hosts_centos_8:
+        vars:
+          mysql_version: 8.0
+      molecule_hosts_fedora_31:
+        vars:
+          mysql_version: 5.7
+      molecule_hosts_fedora_32:
+        vars:
+          mysql_version: 8.0
 verifier:
   name: ansible

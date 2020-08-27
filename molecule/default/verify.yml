@@ -4,7 +4,7 @@
   hosts: molecule_hosts
   gather_facts: no
   tasks:
-    - name: Get mysql info
+    - name: Gather mysql info
       mysql_info:
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
@@ -12,19 +12,24 @@
           - version
       register: mysql_read_info
 
-    - name: Make sure version installed is correct
+    - name: Assert version installed is correct
       assert:
         that:
-          - mysql_read_info.version.major == 5
-          - mysql_read_info.version.minor == 7
+          - >-
+            mysql_read_info.version.major | string
+            == (mysql_version | string).split(".")[0]
+          - >-
+            mysql_read_info.version.minor | string
+            == (mysql_version | string).split(".")[1]
 
     - name: Test root user autologin
       shell: 'mysql -e "show databases;"'
-      register: mysql_read_autologin_test
+      changed_when: no
+      register: mysql_autologin_result
 
-    - name: Assert root user can access without password locally
+    - name: Assert root user can access locally without password
       assert:
         that:
-          - mysql_read_autologin_test.stdout is search("mysql")
-          - mysql_read_autologin_test.stdout is search("information_schema")
-          - mysql_read_autologin_test.stdout is search("performance_schema")
+          - mysql_autologin_result.stdout is search("mysql")
+          - mysql_autologin_result.stdout is search("information_schema")
+          - mysql_autologin_result.stdout is search("performance_schema")

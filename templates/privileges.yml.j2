@@ -1,0 +1,7 @@
+{%- for db in mysql_privileges_dict.keys() | list -%}
+{%- for table in mysql_privileges_dict[db].keys() | list -%}
+{{- db -}}.{{- table -}}:{{- mysql_privileges_dict[db][table] | join(",") -}}
+{% if not loop.last %}/{% endif %}
+{%- endfor -%}
+{% if not loop.last %}/{% endif %}
+{%- endfor -%}

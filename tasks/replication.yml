@@ -1,27 +1,29 @@
 ---
-# Role tasks
-- name: Ensure replication user exist on master
+# Role replication tasks
+
+- name: Setup replication user on master
   mysql_user:
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
     user: "{{ mysql_replication_user }}"
     password: "{{ mysql_replication_password }}"
     host: "{{ mysql_replication_host }}"
-    priv: "{{ mysql_replication_priv }}"
+    priv: "{{ lookup('template', 'privileges.yml.j2') }}"
   delegate_to: "{{ mysql_replication_master }}"
-  no_log: True
+  no_log: "{{ mysql_no_log | default(true) }}"
+  vars:
+    mysql_privileges_dict: "{{ mysql_replication_privleges }}"
 
-- name: Get slave status
+- name: Gather slave status
   mysql_replication:
     mode: getslave
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
   ignore_errors: true
-  register: slave_status
+  register: mysql_slave_status_result
 
 - name: Configure replication
   block:
-
     - name: Enable remote backup user
       mysql_user:
         login_user: "{{ mysql_root_user }}"
@@ -29,17 +31,24 @@
         user: "{{ mysql_backup_user }}"
         password: "{{ mysql_backup_password }}"
         host: '%'
-        priv: "{{ mysql_backup_priv }}"
+        priv: "{{ lookup('template', 'privileges.yml.j2') }}"
       delegate_to: "{{ mysql_replication_master }}"
-      no_log: True
+      no_log: "{{ mysql_no_log | default(true) }}"
+      vars:
+        mysql_privileges_dict: "{{ mysql_backup_privileges }}"
 
-    - name: Get master status
+    - name: Gather master status
       mysql_replication:
         mode: getmaster
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
       delegate_to: "{{ mysql_replication_master }}"
-      register: master_status
+      register: mysql_master_status_result
+
+    - name: Setup temporary file for dump
+      tempfile:
+        state: file
+      register: mysql_tmp_result
 
     - name: Dump master data
       mysql_db:
@@ -50,7 +59,7 @@
         single_transaction: yes
         state: dump
         name: all
-        target: /tmp/dump.sql
+        target: "{{ mysql_tmp_result.path }}"
 
     - name: Import master data
       mysql_db:
@@ -58,9 +67,9 @@
         login_password: "{{ mysql_root_password }}"
         state: import
         name: all
-        target: /tmp/dump.sql
+        target: "{{ mysql_tmp_result.path }}"
 
-    - name: Set master binlog info
+    - name: Setup master binlog info
       mysql_replication:
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
@@ -69,8 +78,8 @@
         master_port: "{{ mysql_replication_master_port }}"
         master_user: "{{ mysql_replication_user }}"
         master_password: "{{ mysql_replication_password }}"
-        master_log_file: "{{ master_status.File }}"
-        master_log_pos: "{{ master_status.Position }}"
+        master_log_file: "{{ mysql_master_status_result.File }}"
+        master_log_pos: "{{ mysql_master_status_result.Position }}"
 
     - name: Start slave
       mysql_replication:
@@ -86,7 +95,10 @@
         host: '%'
         state: absent
       delegate_to: "{{ mysql_replication_master }}"
-      no_log: True
+      no_log: "{{ mysql_no_log | default(true) }}"
 
-  when: (slave_status.Is_Slave is defined and not slave_status.Is_Slave) or
-        (slave_status.Is_Slave is not defined and slave_status is failed)
+  when: >-
+    (mysql_slave_status_result.Is_Slave is defined
+     and not mysql_slave_status_result.Is_Slave)
+    or (mysql_slave_status_result.Is_Slave is not defined
+        and mysql_slave_status_result is failed)

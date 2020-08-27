@@ -29,7 +29,6 @@ lint: |
 platforms:
   - name: "mysql-master"
     image: centos:7
-    dockerfile: ../resources/Dockerfile.j2
     command: /sbin/init
     tmpfs:
       - /run
@@ -42,7 +41,6 @@ platforms:
       - molecule_hosts_centos_7
   - name: "mysql-slave"
     image: centos:7
-    dockerfile: ../resources/Dockerfile.j2
     command: /sbin/init
     etc_hosts: "{'mysql-master': '172.17.0.2'}"
     tmpfs:
@@ -70,7 +68,7 @@ provisioner:
         mysql_replication_master_port: 3306
     group_vars:
       molecule_hosts:
-          mysql_implement_replication: true
+          mysql_replication: yes
           mysql_root_user: root
           mysql_root_password: t3stp4ssw0rd
 verifier:

@@ -1,18 +1,16 @@
 ---
-# Cleanup tasks
+# Role cleanup tasks
 
-- name: Remove first install log if dont use it.
+- name: Remove install log
   file:
-    path: /var/log/mysqld.log
+    path: "{{ mysql_install_log_path }}"
     state: absent
   when:
     - mysql_log_error is defined
-    - mysql_log_error != "/var/log/mysqld.log"
+    - mysql_log_error != mysql_install_log_path
 
-- name: clean temporary Dump
+- name: Remove temporary file for dump
   file:
-    path: /tmp/dump.sql
+    path: "{{ mysql_tmp_result.path }}"
     state: absent
-  when:
-    - mysql_implement_replication
-    - mysql_server_id > 1
+  when: mysql_tmp_result.path is defined

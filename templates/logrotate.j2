@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+
+{{ mysql_log_dir }}/*.log {
+{{ mysql_logrotate_config | indent(width=2, first=true)}}}

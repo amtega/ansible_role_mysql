@@ -1,46 +1,64 @@
 ---
-# Role tasks
-- name: Try set password for first installation
-  block:
-    - name: Estract temporary password for mysql 57 or 80
-      shell: "grep 'temporary password' /var/log/mysqld.log | awk '{ print $NF }'"
-      changed_when: no
-      register: mysql_extract_password
-      no_log: True
+# Role configuration tasks
 
-    - name: Set new password from temporary password
-      shell: 'mysql -e "SET PASSWORD = PASSWORD(''{{ mysql_root_password }}'');" --connect-expired-password -uroot -p"{{ mysql_extract_password.stdout }}"'
-      no_log: True
+- name: Check install log file
+  stat:
+    path: "{{ mysql_install_log_path }}"
+  register: check_install_log_result
 
-  rescue:
-    - name: Rescue task.
-      debug:
-        msg: ' {{ mysql_root_user }} password is already set'
+- name: Gather temporary password
+  shell: >-
+    set -o pipefail ; \
+    grep 'temporary password' \
+    {{ mysql_install_log_path }} \
+    | awk '{ print $NF }'
+  args:
+    warn: no
+  when: check_install_log_result.stat.exists
+  changed_when: no
+  register: mysql_gather_password_result
+  no_log: "{{ mysql_no_log | default(true) }}"
 
-- name: Configure root user autologin
-  block:
-    - name: Check if root user autologin file already exists
-      stat:
-        path: '{{ mysql_user_autologin_file }}'
-      register: mysql_user_autologin_file_check
+- name: Set new password
+  expect:
+    command: >-
+      mysql -e
+      "
+      ALTER USER 'root'@'localhost'
+      IDENTIFIED WITH mysql_native_password
+      BY '{{ mysql_root_password }}';
+      "
+      --connect-expired-password
+      -uroot
+      -p
+    responses:
+     "Enter password": "{{ mysql_gather_password_result.stdout }}"
+  when:
+    - mysql_gather_password_result is not skipped
+    - mysql_gather_password_result.stdout | length > 0
+  no_log: "{{ mysql_no_log | default(true) }}"
+  environment:
+    LANG: en_US
 
-    - name: create configuration .mylogin.cnf for User mysql
-      no_log: True
-      expect:
-         command: mysql_config_editor set --user="{{ mysql_root_user }}" --password
-         responses:
-           'Enter password': '"{{ mysql_root_password }}"'
-      when: not mysql_user_autologin_file_check.stat.exists
-
-    - name: configure logrotate
-      template:
-        src: mysql_logrotate.j2
-        dest: "{{ mysql_logrotate_file_path }}"
-      when: not mysql_user_autologin_file_check.stat.exists
-
+- name: Setup root user autologin
+  expect:
+     command: >-
+       mysql_config_editor set --user="{{ mysql_root_user }}" --password
+     responses:
+       "Enter password": "{{ mysql_root_password }}"
+     creates: "{{ mysql_user_autologin_file }}"
   when: mysql_create_user_autologin
+  no_log: "{{ mysql_no_log | default(true) }}"
 
-- name: Secure all root acounts
+- name: Setup logrotate
+  template:
+    src: logrotate.j2
+    dest: "{{ mysql_logrotate_config_path }}"
+  when:
+    - mysql_logrotate_config_path | default("") | length > 0
+    - mysql_logrotate_config | default("") | length > 0
+
+- name: Secure root accounts
   mysql_user:
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
@@ -50,7 +68,7 @@
   loop: "{{ mysql_root_allowed_hosts }}"
   loop_control:
     loop_var: mysql_host_allowed
-  no_log: True
+  no_log: "{{ mysql_no_log | default(true) }}"
 
 - name: Delete all anonymous users
   mysql_user:
@@ -59,17 +77,19 @@
     user: ""
     host_all: yes
     state: absent
-  no_log: True
+  no_log: "{{ mysql_no_log | default(true) }}"
 
-- name: Create Backup user
+- name: Setup backup user
   mysql_user:
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
     user: "{{ mysql_backup_user }}"
     password: "{{ mysql_backup_password }}"
-    priv: "{{ mysql_backup_priv }}"
+    priv: "{{ lookup('template', 'privileges.yml.j2') }}"
   when: mysql_backup_user is defined
-  no_log: True
+  no_log: "{{ mysql_no_log | default(true) }}"
+  vars:
+    mysql_privileges_dict: "{{ mysql_backup_privileges }}"
 
 - name: Remove test database
   mysql_db:
