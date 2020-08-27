@@ -15,8 +15,12 @@
     - name: Assert version installed is correct
       assert:
         that:
-          - mysql_read_info.version.major == 5
-          - mysql_read_info.version.minor == 7
+          - >-
+            mysql_read_info.version.major | string
+            == (mysql_version | string).split(".")[0]
+          - >-
+            mysql_read_info.version.minor | string
+            == (mysql_version | string).split(".")[1]
 
     - name: Test root user autologin
       shell: 'mysql -e "show databases;"'

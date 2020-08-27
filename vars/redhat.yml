@@ -1,7 +1,0 @@
----
-# Role variables
-
-mysql_repo_rpm: >-
-  {{ "mysql80-community-release-el"
-     + ansible_facts.distribution_major_version
-     + "-3.noarch.rpm" }}

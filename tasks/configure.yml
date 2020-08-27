@@ -22,7 +22,12 @@
 - name: Set new password
   expect:
     command: >-
-      mysql -e "SET PASSWORD = PASSWORD('{{ mysql_root_password }}');"
+      mysql -e
+      "
+      ALTER USER 'root'@'localhost'
+      IDENTIFIED WITH mysql_native_password
+      BY '{{ mysql_root_password }}';
+      "
       --connect-expired-password
       -uroot
       -p

@@ -1,11 +1,29 @@
 ---
 # Role variables
 
-mysql_release: "{{ mysql_version.split('.')[0:1] | join }}"
+mysql_release: "{{ (mysql_version | string).split('.')[0:2] | join }}"
 
-# Repository info
+# Repository variables
 
-mysql_repo_url_download: http://dev.mysql.com/get
+mysql_repo_package_download_url: https://dev.mysql.com/downloads/repo/yum
+
+mysql_repo_package_distro_suffix: >-
+  {{ (ansible_facts.distribution | lower in ["centos", "redhat"])
+     | ternary("el", "fc")
+     + ansible_facts.distribution_major_version | string }}
+
+mysql_repo_package_url: >-
+ {{ mysql_repo_package_download_url | urlsplit('scheme')
+    + "://"
+    + mysql_repo_package_download_url | urlsplit('hostname')
+    + "/get/"
+    + lookup("url", mysql_repo_package_download_url, wantlist=True)
+      | select("search", "\.noarch\.rpm")
+      | map("regex_replace", ".*(mysql[0-9]+.*\.rpm).*", "\1")
+      | select("search", mysql_repo_package_distro_suffix)
+      | list
+      | first }}
+
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 
 # Mysql packages
@@ -13,7 +31,9 @@ mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 mysql_packages:
   - >-
     {{ "mysql-community-server-"
-       + mysql_version }}
+       + mysql_version | string
+       + ((mysql_version | string).split('.') | list | length < 3)
+         | ternary("*", "") }}
 
 # Mysql config file
 

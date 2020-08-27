@@ -7,7 +7,7 @@
 
 # Version to install. Only avaliable on CentOS / RHEL
 
-mysql_version: "5.7"
+mysql_version: 5.7
 
 # Disable gpg signature check
 

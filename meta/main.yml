@@ -13,17 +13,18 @@ galaxy_info:
       versions:
         - 6
         - 7
+        - 8
     - name: Fedora
       versions:
-        - 29
-        - 30
+        - 31
+        - 32
   galaxy_tags: []
 
 dependencies:
   - role: amtega.check_platform
     check_platform_distributions:
       centos: 6
-      fedora: 29
+      fedora: 31
       rhel: 6
 
   - role: amtega.proxy_client
@@ -34,14 +35,22 @@ dependencies:
     vars:
       packages_os:
         centos:
-          all:
+          6:
             MySQL-python: present
+          7:
+            MySQL-python: present
+          8:
+            python3-mysql: present
         fedora:
           all:
             python3-PyMySQL: present
         rhel:
-          all:
+          6:
             MySQL-python: present
+          7:
+            MySQL-python: present
+          8:
+            python3-mysql: present
       packages_python:
         all:
           all:

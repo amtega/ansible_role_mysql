@@ -2,25 +2,28 @@
 # Role tasks
 
 - block:
-    - name: Load operating system specific variables
-      include_vars: "{{ lookup('first_found', mysql_vars_files) }}"
-      vars:
-        mysql_vars_files:
-          - "vars/{{ ansible_facts.distribution | lower }}.yml"
-          - "vars/{{ ansible_facts.os_family | lower }}.yml"
-
     - name: Install mysql community repository package
       yum:
-        name: "{{ mysql_repo_url_download }}/{{ mysql_repo_rpm }}"
+        name: "{{ mysql_repo_package_url }}"
         state: present
         disable_gpg_check: yes
 
     - name: Disable all mysql releases repositories
-      ini_file:
+      replace:
         path: "{{ mysql_repo_file_path }}"
-        section: "mysql80-community"
-        option: "enabled"
-        value: "0"
+        regexp: "enabled *= *1"
+        replace: "enabled=0"
+
+    - name: Disable package manager mysql module
+      command: yum -y module disable mysql
+      args:
+        warn: no
+      when: ansible_facts.distribution_major_version is version("7", ">")
+      register: mysql_disable_module_result
+      changed_when: >-
+        mysql_disable_module_result.stdout is not search("Nothing to do")
+      environment:
+        LANG: en_US
 
     - name: Install selected mysql version
       yum:
