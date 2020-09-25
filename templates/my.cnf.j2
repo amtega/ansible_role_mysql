@@ -54,7 +54,7 @@ slow-query-log-file              = {{ mysql_slow_query_log_file }}
 
 # Replication parameters
 server-id                        = {{ mysql_server_id }}
-{% if mysql_server_id == 1 %}
+{% if mysql_server_id | int == 1 %}
 expire-logs-days                 = {{ mysql_expire_logs_days  }}
 log-bin                          = {{ mysql_log_bin }}
 {% if mysql_log_bin_index is defined %}

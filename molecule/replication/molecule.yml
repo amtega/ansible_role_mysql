@@ -61,9 +61,9 @@ provisioner:
   inventory:
     host_vars:
       mysql-master:
-        mysql_server_id: 1
+        mysql_server_id: "1"
       mysql-slave:
-        mysql_server_id: 2
+        mysql_server_id: "2"
         mysql_replication_master: mysql-master
         mysql_replication_master_port: 3306
     group_vars:
