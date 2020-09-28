@@ -1,14 +1,6 @@
 ---
 # Role cleanup tasks
 
-- name: Remove install log
-  file:
-    path: "{{ mysql_install_log_path }}"
-    state: absent
-  when:
-    - mysql_log_error is defined
-    - mysql_log_error != mysql_install_log_path
-
 - name: Remove temporary file for dump
   file:
     path: "{{ mysql_tmp_result.path }}"
