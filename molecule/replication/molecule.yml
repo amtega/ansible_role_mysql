@@ -68,8 +68,11 @@ provisioner:
         mysql_replication_master_port: 3306
     group_vars:
       molecule_hosts:
+          mysql_version: 5.7.18
           mysql_replication: yes
           mysql_root_user: root
           mysql_root_password: t3stp4ssw0rd
+          mysql_root_allowed_hosts:
+            - localhost
 verifier:
   name: ansible

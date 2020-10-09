@@ -30,7 +30,7 @@ mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 
 mysql_packages:
   - >-
-    {{ "mysql-community-server-"
+    {{ "mysql-community-*"
        + mysql_version | string
        + ((mysql_version | string).split('.') | list | length < 3)
          | ternary("*", "") }}
@@ -38,12 +38,6 @@ mysql_packages:
 # Mysql config file
 
 mysql_config_file_path: /etc/my.cnf
-
-# Mysql extra dirs
-
-mysql_innodb_temp_dir: /var/lib/mysql_tmp
-mysql_binlog_dir: /var/lib/mysql_binlog
-mysql_log_dir: /var/log/mysql
 
 # Mysql install log file
 

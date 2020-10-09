@@ -80,6 +80,8 @@ mysql_tmp_table_size: 32M
 mysql_validate_password_policy: LOW
 mysql_pid_file: /var/run/mysqld/mysqld.pid
 mysql_symbolic_links: 0
+mysql_binlog_dir: /var/lib/mysql_binlog
+mysql_log_dir: /var/log/mysql
 
 # Innodb settings
 
@@ -92,6 +94,7 @@ mysql_innodb_log_files_in_group: 2
 mysql_innodb_log_file_size: 512M
 mysql_innodb_temp_data_file_path: "../mysql_tmp/ibtmp1:50M:autoextend:max:15G"
 mysql_innodb_page_cleaners: 2
+mysql_innodb_temp_dir: /var/lib/mysql_tmp
 
 # Log settings
 
