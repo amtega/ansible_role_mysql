@@ -24,4 +24,4 @@
               - >-
                 mysql_verify_replication.Slave_SQL_Running_State
                 is search("Slave has read all relay log")
-      when: mysql_server_id > 1
+      when: mysql_server_id | int > 1
