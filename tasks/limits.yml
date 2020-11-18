@@ -19,9 +19,8 @@
       register: mysql_systemd_overrides_limits_result
 
     - name: Reload systemd daemon
-      command: systemctl daemon-reload
-      args:
-        warn: no
+      systemd:
+        daemon_reload: yes
       when:
         - ansible_facts.service_mgr == "systemd"
         - mysql_systemd_overrides_limits_result is changed
