@@ -74,5 +74,6 @@ provisioner:
           mysql_root_password: t3stp4ssw0rd
           mysql_root_allowed_hosts:
             - localhost
+          mysql_no_log: no
 verifier:
   name: ansible

@@ -61,6 +61,11 @@
         dest: "{{ mysql_config_file_path }}"
       register: mysql_setup_my_cnf_result
 
+    - include_tasks: limits.yml
+      when:
+        - mysql_setup_my_cnf_result is changed
+        - mysql_adjust_limits
+
     - name: Restart mysql service to apply settings
       service:
         name: mysqld

@@ -32,6 +32,16 @@ mysql_root_allowed_hosts:
   - ::1
   - localhost
 
+# Adjust mysql limits in systemd if you want. See systemd-system.conf(5) for details.
+
+mysql_adjust_limits: true
+mysql_systemd_overrides_dir: /etc/systemd/system/mysqld.service.d
+mysql_limits:
+  - type: nproc
+    value: 10000
+  - type: nofile
+    value: 10000
+
 # Log rotation settings
 
 mysql_logrotate_config_path: /etc/logrotate.d/mysql
