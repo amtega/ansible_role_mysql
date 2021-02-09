@@ -28,6 +28,7 @@ validate-password.policy         = {{ mysql_validate_password_policy }}
 {% if mysql_version is version("8", ">=") %}
 default-authentication-plugin    = mysql_native_password
 {% endif %}
+sql-mode                         = {{ mysql_sql_modes | join(",") }}
 
 # Innodb
 innodb-buffer-pool-instances     = {{ mysql_innodb_buffer_pool_instances  }}

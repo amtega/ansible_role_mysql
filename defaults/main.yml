@@ -92,6 +92,7 @@ mysql_pid_file: /var/run/mysqld/mysqld.pid
 mysql_symbolic_links: 0
 mysql_binlog_dir: /var/lib/mysql_binlog
 mysql_log_dir: /var/log/mysql
+mysql_sql_modes: []
 
 # Innodb settings
 
