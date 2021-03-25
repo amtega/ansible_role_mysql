@@ -32,7 +32,7 @@ mysql_create_user_autologin: yes
 # Using ansible-vault to store them is highly recommended.
 # Default value is set to 'no'
 
-mysql_encrypted_password: yes
+mysql_encrypted_password: no
 
 # Restrict root user access
 
