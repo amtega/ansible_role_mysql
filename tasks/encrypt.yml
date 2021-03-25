@@ -1,0 +1,31 @@
+---
+
+- name: Encrypt mysql backup user password
+  shell: >-
+    set -o pipefail ;
+    echo -n '{{ mysql_backup_password }}'
+    | sha1sum
+    | xxd -r -p
+    | sha1sum
+    | tr '[a-z]' '[A-Z]'
+    | awk '{printf "*%s", $1}'
+  args:
+    warn: no
+  changed_when: no
+  register: mysql_backup_encrypted_password
+  no_log: "{{ mysql_no_log | default(true) }}"
+
+- name: Encrypt mysql replication user password
+  shell: >-
+    set -o pipefail ;
+    echo -n '{{ mysql_replication_password }}'
+    | sha1sum
+    | xxd -r -p
+    | sha1sum
+    | tr '[a-z]' '[A-Z]'
+    | awk '{printf "*%s", $1}'
+  args:
+    warn: no
+  changed_when: no
+  register: mysql_replication_encrypted_password
+  no_log: "{{ mysql_no_log | default(true) }}"
