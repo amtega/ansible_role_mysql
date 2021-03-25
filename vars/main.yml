@@ -26,6 +26,48 @@ mysql_repo_package_url: >-
 
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 
+# OS packages
+
+mysql_packages_os_common:
+  centos:
+    6:
+      MySQL-python: present
+    7:
+      MySQL-python: present
+    8:
+      python3-mysql: present
+  fedora:
+    all:
+      python3-PyMySQL: present
+  rhel:
+    6:
+      MySQL-python: present
+    7:
+      MySQL-python: present
+    8:
+      python3-mysql: present
+
+mysql_packages_os_password_encryption:
+  all:
+    all:
+      gawk: present
+      coreutils: present
+      vim-common: present
+
+mysql_packages_os: >-
+  {{ (mysql_encrypted_password | bool)
+     | ternary(mysql_packages_os_common
+               | combine(mysql_packages_os_password_encryption,
+                         recursive=true),
+               mysql_packages_os_common) }}
+
+# Python packages
+
+mysql_packages_python:
+  all:
+    all:
+      pexpect: latest
+
 # Mysql packages
 
 mysql_packages:
