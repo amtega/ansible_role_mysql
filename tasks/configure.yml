@@ -62,6 +62,7 @@
   template:
     src: logrotate.j2
     dest: "{{ mysql_logrotate_config_path }}"
+    mode: "0644"
   when:
     - mysql_logrotate_config_path | default("") | length > 0
     - mysql_logrotate_config | default("") | length > 0
@@ -92,7 +93,10 @@
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
     user: "{{ mysql_backup_user }}"
-    password: "{{ mysql_backup_password }}"
+    password: >-
+      {{ mysql_backup_encrypted_password.stdout if (mysql_encrypted_password | bool)
+         else mysql_backup_password }}
+    encrypted: "{{ mysql_encrypted_password }}"
     priv: "{{ lookup('template', 'privileges.yml.j2') }}"
   when: mysql_backup_user is defined
   no_log: "{{ mysql_no_log | default(true) }}"

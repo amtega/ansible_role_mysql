@@ -59,6 +59,7 @@
       template:
         src: my.cnf.j2
         dest: "{{ mysql_config_file_path }}"
+        mode: "0644"
       register: mysql_setup_my_cnf_result
 
     - include_tasks: limits.yml
