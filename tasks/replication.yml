@@ -7,8 +7,9 @@
     login_password: "{{ mysql_root_password }}"
     user: "{{ mysql_replication_user }}"
     password: >-
-      {{ mysql_replication_encrypted_password.stdout if (mysql_encrypted_password | bool)
-         else mysql_replication_password }}
+      {{ (mysql_encrypted_password | bool)
+         | ternary(mysql_backup_encrypted_password.stdout | default(""),
+                   mysql_backup_password | default("")) }}
     encrypted: "{{ mysql_encrypted_password }}"
     host: "{{ mysql_replication_host }}"
     priv: "{{ lookup('template', 'privileges.yml.j2') }}"
@@ -33,8 +34,9 @@
         login_password: "{{ mysql_root_password }}"
         user: "{{ mysql_backup_user }}"
         password: >-
-          {{ mysql_backup_encrypted_password.stdout if (mysql_encrypted_password | bool)
-             else mysql_backup_password }}
+          {{ (mysql_encrypted_password | bool)
+             | ternary(mysql_backup_encrypted_password.stdout | default(""),
+                       mysql_backup_password | default("")) }}
         encrypted: "{{ mysql_encrypted_password }}"
         host: '%'
         priv: "{{ lookup('template', 'privileges.yml.j2') }}"
