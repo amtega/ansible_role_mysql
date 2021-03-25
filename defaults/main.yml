@@ -25,6 +25,15 @@ mysql_root_password: changme
 
 mysql_create_user_autologin: yes
 
+# The role supports the possibility of encrypting with the mysql_native_password
+# format the passwords of the users created with the ansible mysql_user module.
+# Even so, since they are necessary for the connection in the replication configuration,
+# it is necessary to have such unencrypted passwords.
+# Using ansible-vault to store them is highly recommended.
+# Default value is set to 'no'
+
+mysql_encrypted_password: no
+
 # Restrict root user access
 
 mysql_root_allowed_hosts:
