@@ -3,6 +3,7 @@
 - name: Verify
   hosts: molecule_hosts
   gather_facts: no
+  become: yes
   tasks:
     - block:
         - name: Get slave status
