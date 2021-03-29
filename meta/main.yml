@@ -2,7 +2,7 @@
 # Role dependencies
 
 galaxy_info:
-  role_name: amtega.mysql
+  role_name: mysql
   author: José Enrique Mourón Regueira / Juan Antonio Valiño García
   description: Setup mysql with replication config
   company: AMTEGA - Xunta de Galicia

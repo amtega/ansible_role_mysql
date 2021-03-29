@@ -50,11 +50,6 @@ provisioner:
         mysql_replication_master_port: 3306
     group_vars:
       molecule_hosts:
-        ansible_user: vagrant
-        ansible_password: vagrant
-        ansible_become: yes
-        ansible_become_user: root
-        ansible_become_pass: vagrant
         mysql_version: 8.0
         mysql_replication: yes
         mysql_root_user: root
