@@ -8,8 +8,8 @@
     user: "{{ mysql_replication_user }}"
     password: >-
       {{ (mysql_encrypted_password | bool)
-         | ternary(mysql_backup_encrypted_password.stdout | default(""),
-                   mysql_backup_password | default("")) }}
+         | ternary(mysql_replication_encrypted_password.stdout | default(""),
+                   mysql_replication_password | default("")) }}
     encrypted: "{{ mysql_encrypted_password }}"
     host: "{{ mysql_replication_host }}"
     priv: "{{ lookup('template', 'privileges.yml.j2') }}"

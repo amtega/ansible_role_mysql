@@ -16,13 +16,13 @@
         - name: Make sure replication is working
           assert:
             that:
-              - mysql_verify_replication.Slave_IO_Running == "Yes"
-              - mysql_verify_replication.Slave_SQL_Running == "Yes"
-              - mysql_verify_replication.Seconds_Behind_Master == 0
+              - mysql_verify_replication.Replica_IO_Running == "Yes"
+              - mysql_verify_replication.Replica_SQL_Running == "Yes"
+              - mysql_verify_replication.Seconds_Behind_Source == 0
               - >-
-                mysql_verify_replication.Slave_IO_State
+                mysql_verify_replication.Replica_IO_State
                 is search("Waiting for master")
               - >-
-                mysql_verify_replication.Slave_SQL_Running_State
+                mysql_verify_replication.Replica_SQL_Running_State
                 is search("Slave has read all relay log")
       when: mysql_server_id | int > 1
