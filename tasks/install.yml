@@ -48,6 +48,10 @@
         owner: "{{ mysql_user }}"
         group: "{{ mysql_group }}"
         mode: "0755"
+        seuser: system_u
+        serole: object_r
+        setype: mysqld_db_t
+        selevel: s0
       loop:
         - "{{ mysql_innodb_temp_dir }}"
         - "{{ mysql_binlog_dir }}"
