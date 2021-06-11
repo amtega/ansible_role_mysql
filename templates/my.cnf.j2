@@ -1,9 +1,11 @@
 {{ ansible_managed | comment }}
 [mysqld]
 port                             = {{ mysql_port }}
+binlog-cache-size                = {{ mysql_binlog_cache_size }}
 character-set-server             = {{ mysql_character_set_server }}
 collation-server                 = {{ mysql_collation_server }}
 datadir                          = {{ mysql_datadir }}
+tmpdir                           = {{ mysql_tmpdir }}
 pid-file                         = {{ mysql_pid_file }}
 socket                           = {{ mysql_socket }}
 max-heap-table-size              = {{ mysql_max_heap_table_size }}
@@ -28,8 +30,10 @@ validate-password.policy         = {{ mysql_validate_password_policy }}
 {% if mysql_version is version("8", ">=") %}
 default-authentication-plugin    = mysql_native_password
 {% endif %}
+wait-timeout                     = {{ mysql_wait_timeout }}
+{% if mysql_include_sql_modes | bool %}
 sql-mode                         = {{ mysql_sql_modes | join(",") }}
-
+{% endif %}
 # Innodb
 innodb-buffer-pool-instances     = {{ mysql_innodb_buffer_pool_instances  }}
 innodb-buffer-pool-size          = {{ mysql_innodb_buffer_pool_size }}
@@ -68,6 +72,9 @@ max_binlog_size                  = {{ mysql_max_binlog_size }}
 binlog_format                    = {{ mysql_binlog_format }}
 {% endif %}
 {% else %}
+# Keep the master configuration commented in order to speed-up switch roles operations
+# expire-logs-days                 = {{ mysql_expire_logs_days  }}
+# log-bin                          = {{ mysql_log_bin }}
 relay-log                        = {{ mysql_relay_log }}
 {% if mysql_relay_log_index is defined %}
 relay-log-index                    = {{ mysql_relay_log_index }}
