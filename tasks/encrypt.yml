@@ -12,7 +12,7 @@
   args:
     warn: no
   changed_when: no
-  register: mysql_backup_encrypted_password
+  register: mysql_backup_encrypted_password_result
   no_log: "{{ mysql_no_log | default(true) }}"
 
 - name: Encrypt mysql replication user password
