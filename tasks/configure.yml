@@ -95,7 +95,7 @@
     user: "{{ mysql_backup_user }}"
     password: >-
       {{ (mysql_encrypted_password | bool)
-         | ternary(mysql_backup_encrypted_password.stdout | default(""),
+         | ternary(mysql_backup_encrypted_password_result.stdout | default(""),
                    mysql_backup_password | default("")) }}
     encrypted: "{{ mysql_encrypted_password }}"
     priv: "{{ lookup('template', 'privileges.yml.j2') }}"
