@@ -2,13 +2,22 @@
 
 dependency:
   name: galaxy
+  enabled: yes
+  options:
+    ignore-certs: yes
+    ignore-errors: yes
+    role-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
+    requirements-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
 driver:
   name: docker
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
-  - name: "mysql-master"
+  - name: "mysql-master-${INSTANCE_UUID:-1}"
     image: centos:7
     command: /sbin/init
+    exposed_ports: ['3306']
     tmpfs:
       - /run
       - /tmp
@@ -18,10 +27,11 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
-  - name: "mysql-slave"
+      - molecule_hosts_mysql_master
+  - name: "mysql-slave-${INSTANCE_UUID:-1}"
     image: centos:7
     command: /sbin/init
-    etc_hosts: "{'mysql-master': '172.17.0.2'}"
+    exposed_ports: ['3306']
     tmpfs:
       - /run
       - /tmp
@@ -31,21 +41,26 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
+      - molecule_hosts_mysql_slave
 provisioner:
   name: ansible
+  playbooks:
+    cleanup: ../resources/cleanup.yml
+    side_effect: ../resources/side_effect.yml
   config_options:
     defaults:
-      callback_whitelist: profile_tasks
+      callback_enabled: profile_tasks
       action_plugins: $PWD/action_plugins
   inventory:
-    host_vars:
-      mysql-master:
-        mysql_server_id: "1"
-      mysql-slave:
-        mysql_server_id: "2"
-        mysql_replication_master: mysql-master
-        mysql_replication_master_port: 3306
     group_vars:
+      molecule_hosts_mysql_master:
+        mysql_server_id: "1"
+
+      molecule_hosts_mysql_slave:
+        mysql_server_id: "2"
+        mysql_replication_master: "{{ groups.molecule_hosts_mysql_master.0 }}"
+        mysql_replication_master_port: 3306
+
       molecule_hosts:
         mysql_version: 8.0
         mysql_replication: yes

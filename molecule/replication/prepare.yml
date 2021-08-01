@@ -1,0 +1,17 @@
+---
+
+- name: Prepare
+  hosts: molecule_hosts
+  gather_facts: yes
+  tasks:
+    - name: Added entries to /etc/hosts
+      shell: >-
+        echo \
+        {{ hostvars[primary_host].ansible_facts.default_ipv4.address }} \
+        {{ primary_host }} \
+        > /etc/hosts
+      args:
+        warn: no
+      when: inventory_hostname in groups.molecule_hosts_mysql_slave
+      vars:
+        primary_host: "{{ groups.molecule_hosts_mysql_master.0 }}"

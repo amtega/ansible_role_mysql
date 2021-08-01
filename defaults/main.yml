@@ -27,9 +27,9 @@ mysql_create_user_autologin: yes
 
 # The role supports the possibility of encrypting with the mysql_native_password
 # format the passwords of the users created with the ansible mysql_user module.
-# Even so, since they are necessary for the connection in the replication configuration,
-# it is necessary to have such unencrypted passwords.
-# Using ansible-vault to store them is highly recommended.
+# Even so, since they are necessary for the connection in the replication
+# configuration, it is necessary to have such unencrypted passwords. Using
+# ansible-vault to store them is highly recommended.
 # Default value is set to 'no'
 
 mysql_encrypted_password: no
@@ -41,9 +41,10 @@ mysql_root_allowed_hosts:
   - ::1
   - localhost
 
-# Adjust mysql limits in systemd if you want. See systemd-system.conf(5) for details.
+# Adjust mysql limits in systemd if you want. See systemd-system.conf(5) for
+# details.
 
-mysql_adjust_limits: true
+mysql_adjust_limits: yes
 mysql_systemd_overrides_dir: /etc/systemd/system/mysqld.service.d
 mysql_limits:
   - type: nproc
@@ -104,7 +105,7 @@ mysql_symbolic_links: 0
 mysql_binlog_dir: /var/lib/mysql_binlog
 mysql_log_dir: /var/log/mysql
 mysql_wait_timeout: 300
-mysql_include_sql_modes: false
+mysql_include_sql_modes: no
 mysql_sql_modes: []
 
 # Innodb settings

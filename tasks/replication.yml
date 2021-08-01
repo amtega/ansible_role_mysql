@@ -20,10 +20,10 @@
 
 - name: Gather slave status
   mysql_replication:
-    mode: getslave
+    mode: getreplica
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
-  ignore_errors: true
+  ignore_errors: yes
   register: mysql_slave_status_result
 
 - name: Configure replication
@@ -48,7 +48,7 @@
 
     - name: Gather master status
       mysql_replication:
-        mode: getmaster
+        mode: getprimary
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
       delegate_to: "{{ mysql_replication_master }}"
@@ -82,7 +82,7 @@
       mysql_replication:
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
-        mode: changemaster
+        mode: changeprimary
         master_host: "{{ mysql_replication_master }}"
         master_port: "{{ mysql_replication_master_port }}"
         master_user: "{{ mysql_replication_user }}"
@@ -92,7 +92,7 @@
 
     - name: Start slave
       mysql_replication:
-        mode: startslave
+        mode: startreplica
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
 
@@ -107,7 +107,7 @@
       no_log: "{{ mysql_no_log | default(true) }}"
 
   when: >-
-    (mysql_slave_status_result.Is_Slave is defined
-     and not mysql_slave_status_result.Is_Slave)
-    or (mysql_slave_status_result.Is_Slave is not defined
+    (mysql_slave_status_result.Is_Replica is defined
+     and not mysql_slave_status_result.Is_Replica)
+    or (mysql_slave_status_result.Is_Replica is not defined
         and mysql_slave_status_result is failed)

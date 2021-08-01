@@ -8,7 +8,7 @@
     - block:
         - name: Get slave status
           mysql_replication:
-            mode: getslave
+            mode: getreplica
             login_user: "{{ mysql_root_user }}"
             login_password: "{{ mysql_root_password }}"
           register: mysql_verify_replication
