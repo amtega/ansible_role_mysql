@@ -2,7 +2,7 @@
 
 This is an [Ansible](http://www.ansible.com) role to install mysql community server whith replication option.
 
-In the replication mode the mysql server is assumed to be offline because ansible mysql_db module does not support the master-data option, and there is no way to guarantee the integrity of the replication if the master is online and receiving requests.
+In the replication mode the mysql server is assumed to be offline because ansible mysql_db module does not support the primary-data option, and there is no way to guarantee the integrity of the replication if the primeary is online and receiving requests.
 
 ## Role Variables
 
@@ -32,7 +32,7 @@ molecule test --all
 
 ## License
 
-Copyright (C) 2020 AMTEGA - Xunta de Galicia
+Copyright (C) 2021 AMTEGA - Xunta de Galicia
 
 This role is free software: you can redistribute it and/or modify it under the terms of:
 

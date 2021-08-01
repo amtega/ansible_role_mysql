@@ -30,8 +30,6 @@ mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 
 mysql_packages_os_common:
   centos:
-    6:
-      MySQL-python: present
     7:
       MySQL-python: present
     8:
@@ -40,10 +38,8 @@ mysql_packages_os_common:
     all:
       python3-PyMySQL: present
   rhel:
-    6:
-      MySQL-python: present
     7:
-      MySQL-python: present
+      MySQL-python: presen
     8:
       python3-mysql: present
 
@@ -67,6 +63,13 @@ mysql_packages_python:
   all:
     all:
       pexpect: latest
+  centos:
+    7:
+      PyMySQL: present
+  rhel:
+    7:
+      PyMySQL: present
+
 
 # Mysql packages
 

@@ -72,7 +72,7 @@ max_binlog_size                  = {{ mysql_max_binlog_size }}
 binlog_format                    = {{ mysql_binlog_format }}
 {% endif %}
 {% else %}
-# Keep the master configuration commented in order to speed-up switch roles operations
+# Keep the primary configuration commented in order to speed-up switch roles operations
 # expire-logs-days                 = {{ mysql_expire_logs_days  }}
 # log-bin                          = {{ mysql_log_bin }}
 relay-log                        = {{ mysql_relay_log }}

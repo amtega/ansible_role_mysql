@@ -6,9 +6,9 @@
   become: yes
   tasks:
     - block:
-        - name: Get slave status
+        - name: Get replica status
           mysql_replication:
-            mode: getslave
+            mode: getreplica
             login_user: "{{ mysql_root_user }}"
             login_password: "{{ mysql_root_password }}"
           register: mysql_verify_replication
@@ -21,8 +21,8 @@
               - mysql_verify_replication.Seconds_Behind_Source == 0
               - >-
                 mysql_verify_replication.Replica_IO_State
-                is search("Waiting for master")
+                is search("Waiting for")
               - >-
                 mysql_verify_replication.Replica_SQL_Running_State
-                is search("Slave has read all relay log")
+                is search("read all relay log")
       when: mysql_server_id | int > 1
