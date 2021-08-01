@@ -32,7 +32,7 @@
       -uroot
       -p
     responses:
-     "Enter password": "{{ mysql_gather_password_result.stdout }}"
+      "Enter password": "{{ mysql_gather_password_result.stdout }}"
   when:
     - mysql_gather_password_result is not skipped
     - mysql_gather_password_result.stdout | length > 0
@@ -50,11 +50,11 @@
 
 - name: Setup root user autologin
   expect:
-     command: >-
-       mysql_config_editor set --user="{{ mysql_root_user }}" --password
-     responses:
-       "Enter password": "{{ mysql_root_password }}"
-     creates: "{{ mysql_user_autologin_file }}"
+    command: >-
+      mysql_config_editor set --user="{{ mysql_root_user }}" --password
+    responses:
+      "Enter password": "{{ mysql_root_password }}"
+    creates: "{{ mysql_user_autologin_file }}"
   when: mysql_create_user_autologin
   no_log: "{{ mysql_no_log | default(true) }}"
 
@@ -106,7 +106,7 @@
 
 - name: Remove test database
   mysql_db:
-   login_user: "{{ mysql_root_user }}"
-   login_password: "{{ mysql_root_password }}"
-   name: test
-   state: absent
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+    name: test
+    state: absent
