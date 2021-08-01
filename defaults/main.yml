@@ -170,11 +170,20 @@ mysql_backup_privileges:
       - EXECUTE
       - PROCESS
 
-# Replication master settings. Asume first inventory host by default
+# Replication primary settings. By default point to the backwards compatible
+# vars and nexto to the first play host
 
-mysql_replication_master: "{{ ansible_play_hosts[0] }}"
-mysql_replication_master_port: >-
-  {{ hostvars[mysql_replication_master][ 'mysql_port' ] }}
+mysql_replication_primary: >-
+  {{ mysql_replication_master | default(ansible_play_hosts[0]) }}
+
+mysql_replication_primary_port: >-
+  {{ mysql_replication_master_port
+     | default(hostvars[mysql_replication_primary]['mysql_port']) }}
+
+# Backwards compatible vars
+
+# mysql_replication_master:
+# mysql_replication_master_port:
 
 # Only for releases 57 or lower
 

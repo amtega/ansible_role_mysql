@@ -1,7 +1,7 @@
 ---
 # Role replication tasks
 
-- name: Setup replication user on master
+- name: Setup replication user on primary
   mysql_user:
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
@@ -13,18 +13,18 @@
     encrypted: "{{ mysql_encrypted_password }}"
     host: "{{ mysql_replication_host }}"
     priv: "{{ lookup('template', 'privileges.yml.j2') }}"
-  delegate_to: "{{ mysql_replication_master }}"
+  delegate_to: "{{ mysql_replication_primary }}"
   no_log: "{{ mysql_no_log | default(true) }}"
   vars:
     mysql_privileges_dict: "{{ mysql_replication_privleges }}"
 
-- name: Gather slave status
+- name: Gather replica status
   mysql_replication:
     mode: getreplica
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
   ignore_errors: yes
-  register: mysql_slave_status_result
+  register: mysql_replica_status_result
 
 - name: Configure replication
   block:
@@ -41,36 +41,36 @@
         encrypted: "{{ mysql_encrypted_password }}"
         host: '%'
         priv: "{{ lookup('template', 'privileges.yml.j2') }}"
-      delegate_to: "{{ mysql_replication_master }}"
+      delegate_to: "{{ mysql_replication_primary }}"
       no_log: "{{ mysql_no_log | default(true) }}"
       vars:
         mysql_privileges_dict: "{{ mysql_backup_privileges }}"
 
-    - name: Gather master status
+    - name: Gather primary status
       mysql_replication:
         mode: getprimary
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
-      delegate_to: "{{ mysql_replication_master }}"
-      register: mysql_master_status_result
+      delegate_to: "{{ mysql_replication_primary }}"
+      register: mysql_primary_status_result
 
     - name: Setup temporary file for dump
       tempfile:
         state: file
       register: mysql_tmp_result
 
-    - name: Dump master data
+    - name: Dump primary data
       mysql_db:
         login_user: "{{ mysql_backup_user }}"
         login_password: "{{ mysql_backup_password }}"
-        login_host: "{{ mysql_replication_master }}"
-        login_port: "{{ mysql_replication_master_port }}"
+        login_host: "{{ mysql_replication_primary }}"
+        login_port: "{{ mysql_replication_primary_port }}"
         single_transaction: yes
         state: dump
         name: all
         target: "{{ mysql_tmp_result.path }}"
 
-    - name: Import master data
+    - name: Import primary data
       mysql_db:
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
@@ -78,19 +78,19 @@
         name: all
         target: "{{ mysql_tmp_result.path }}"
 
-    - name: Setup master binlog info
+    - name: Setup primary binlog info
       mysql_replication:
         login_user: "{{ mysql_root_user }}"
         login_password: "{{ mysql_root_password }}"
         mode: changeprimary
-        master_host: "{{ mysql_replication_master }}"
-        master_port: "{{ mysql_replication_master_port }}"
-        master_user: "{{ mysql_replication_user }}"
-        master_password: "{{ mysql_replication_password }}"
-        master_log_file: "{{ mysql_master_status_result.File }}"
-        master_log_pos: "{{ mysql_master_status_result.Position }}"
+        primary_host: "{{ mysql_replication_primary }}"
+        primary_port: "{{ mysql_replication_primary_port }}"
+        primary_user: "{{ mysql_replication_user }}"
+        primary_password: "{{ mysql_replication_password }}"
+        primary_log_file: "{{ mysql_primary_status_result.File }}"
+        primary_log_pos: "{{ mysql_primary_status_result.Position }}"
 
-    - name: Start slave
+    - name: Start replica
       mysql_replication:
         mode: startreplica
         login_user: "{{ mysql_root_user }}"
@@ -103,11 +103,11 @@
         user: "{{ mysql_backup_user }}"
         host: '%'
         state: absent
-      delegate_to: "{{ mysql_replication_master }}"
+      delegate_to: "{{ mysql_replication_primary }}"
       no_log: "{{ mysql_no_log | default(true) }}"
 
   when: >-
-    (mysql_slave_status_result.Is_Replica is defined
-     and not mysql_slave_status_result.Is_Replica)
-    or (mysql_slave_status_result.Is_Replica is not defined
-        and mysql_slave_status_result is failed)
+    (mysql_replica_status_result.Is_Replica is defined
+     and not mysql_replica_status_result.Is_Replica)
+    or (mysql_replica_status_result.Is_Replica is not defined
+        and mysql_replica_status_result is failed)

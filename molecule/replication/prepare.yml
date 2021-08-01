@@ -12,6 +12,6 @@
         > /etc/hosts
       args:
         warn: no
-      when: inventory_hostname in groups.molecule_hosts_mysql_slave
+      when: inventory_hostname in groups.molecule_hosts_mysql_replica
       vars:
-        primary_host: "{{ groups.molecule_hosts_mysql_master.0 }}"
+        primary_host: "{{ groups.molecule_hosts_mysql_primary.0 }}"

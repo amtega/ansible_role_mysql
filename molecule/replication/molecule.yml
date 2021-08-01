@@ -14,7 +14,7 @@ driver:
   name: docker
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
-  - name: "mysql-master-${INSTANCE_UUID:-1}"
+  - name: "mysql-primary-${INSTANCE_UUID:-1}"
     image: centos:7
     command: /sbin/init
     exposed_ports: ['3306']
@@ -27,8 +27,8 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
-      - molecule_hosts_mysql_master
-  - name: "mysql-slave-${INSTANCE_UUID:-1}"
+      - molecule_hosts_mysql_primary
+  - name: "mysql-replica-${INSTANCE_UUID:-1}"
     image: centos:7
     command: /sbin/init
     exposed_ports: ['3306']
@@ -41,7 +41,7 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
-      - molecule_hosts_mysql_slave
+      - molecule_hosts_mysql_replica
 provisioner:
   name: ansible
   playbooks:
@@ -53,13 +53,13 @@ provisioner:
       action_plugins: $PWD/action_plugins
   inventory:
     group_vars:
-      molecule_hosts_mysql_master:
+      molecule_hosts_mysql_primary:
         mysql_server_id: "1"
 
-      molecule_hosts_mysql_slave:
+      molecule_hosts_mysql_replica:
         mysql_server_id: "2"
-        mysql_replication_master: "{{ groups.molecule_hosts_mysql_master.0 }}"
-        mysql_replication_master_port: 3306
+        mysql_replication_primary: "{{ groups.molecule_hosts_mysql_primary.0 }}"
+        mysql_replication_primary_port: 3306
 
       molecule_hosts:
         mysql_version: 8.0
