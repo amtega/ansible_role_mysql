@@ -39,7 +39,7 @@ mysql_packages_os_common:
       python3-PyMySQL: present
   rhel:
     7:
-      MySQL-python: presen
+      MySQL-python: present
     8:
       python3-mysql: present
 
