@@ -15,7 +15,7 @@ driver:
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
   - name: "mysql-primary-${INSTANCE_UUID:-1}"
-    image: centos:7
+    image: quay.io/centos/centos:stream8
     command: /sbin/init
     exposed_ports: ['3306']
     tmpfs:
@@ -29,7 +29,7 @@ platforms:
       - molecule_hosts_centos_7
       - molecule_hosts_mysql_primary
   - name: "mysql-replica-${INSTANCE_UUID:-1}"
-    image: centos:7
+    image: quay.io/centos/centos:stream8
     command: /sbin/init
     exposed_ports: ['3306']
     tmpfs:
@@ -49,7 +49,7 @@ provisioner:
     side_effect: ../resources/side_effect.yml
   config_options:
     defaults:
-      callback_enabled: profile_tasks
+      callbacks_enabled: profile_tasks
       action_plugins: $PWD/action_plugins
   inventory:
     group_vars:
