@@ -8,8 +8,7 @@ mysql_release: "{{ (mysql_version | string).split('.')[0:2] | join }}"
 mysql_repo_package_download_url: https://dev.mysql.com/downloads/repo/yum
 
 mysql_repo_package_distro_suffix: >-
-  {{ (ansible_facts.distribution | lower in ["centos", "redhat"])
-     | ternary("el", "fc")
+  {{ (ansible_facts.distribution | lower != "fedora") | ternary("el", "fc")
      + ansible_facts.distribution_major_version | string }}
 
 mysql_repo_package_url: >-
