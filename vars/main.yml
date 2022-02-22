@@ -28,7 +28,7 @@ mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 # OS packages
 
 mysql_packages_os_common:
-  centos:
+  all:
     7:
       MySQL-python: present
     8:
@@ -36,11 +36,6 @@ mysql_packages_os_common:
   fedora:
     all:
       python3-PyMySQL: present
-  rhel:
-    7:
-      MySQL-python: present
-    8:
-      python3-mysql: present
 
 mysql_packages_os_password_encryption:
   all:
