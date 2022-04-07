@@ -55,9 +55,20 @@
       loop:
         - "{{ mysql_innodb_temp_dir }}"
         - "{{ mysql_binlog_dir }}"
-        - "{{ mysql_log_dir }}"
       loop_control:
         loop_var: mysql_extra_dir
+
+    - name: Setup log directory
+      file:
+        path: "{{ mysql_log_dir }}"
+        state: directory
+        owner: "{{ mysql_user }}"
+        group: "{{ mysql_group }}"
+        mode: "0755"
+        seuser: system_u
+        serole: object_r
+        setype: mysqld_log_t
+        selevel: s0
 
     - name: Setup mysql configuration file
       template:
