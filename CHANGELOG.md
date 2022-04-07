@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2022-04-07
+### Fixed
+- Adjust log directory selinux context. Related to ansible/roles/amtega.mysql/-/issues/9
+
 ## [1.4.1] - 2022-02-22
 ### Fixed
 - Adapted for CentOS derived distros. Related to ansible/main#263
