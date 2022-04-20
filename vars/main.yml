@@ -71,8 +71,7 @@ mysql_packages:
   - >-
     {{ "mysql-community-*"
        + mysql_version | string
-       + ((mysql_version | string).split('.') | list | length < 3)
-         | ternary("*", "") }}
+       + "*" }}
 
 # Mysql config file
 
