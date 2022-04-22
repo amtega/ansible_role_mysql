@@ -44,6 +44,7 @@ innodb-log-files-in-group        = {{ mysql_innodb_log_files_in_group  }}
 innodb-log-file-size             = {{ mysql_innodb_log_file_size  }}
 innodb_temp_data_file_path       = {{ mysql_innodb_temp_data_file_path  }}
 innodb-page-cleaners             = {{ mysql_innodb_page_cleaners }}
+innodb-print-all-deadlocks       = {{ mysql_innodb_print_all_deadlocks }}
 {% if mysql_version is version("8", "<") %}
 ignore-db-dir                    = {{ mysql_ignore_db_dir }}
 internal_tmp_disk_storage_engine = {{ mysql_internal_tmp_disk_storage_engine }}
