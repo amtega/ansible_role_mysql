@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.5] - 2022-04-22
+### Changed
+- Modify innodb-print-all-deadlocks default. Related ansible/playbooks/mysql#19
+
 ## [1.4.4] - 2022-04-22
 ### Changed
 - Add innodb-print-all-deadlocks to my.cnf. Related ansible/playbooks/mysql#19
