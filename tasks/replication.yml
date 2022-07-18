@@ -55,7 +55,7 @@
       register: mysql_primary_status_result
 
     - name: Setup temporary file for dump
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
       register: mysql_tmp_result
 

@@ -2,12 +2,12 @@
 # Role configuration tasks
 
 - name: Check install log file
-  stat:
+  ansible.builtin.stat:
     path: "{{ mysql_install_log_path }}"
   register: check_install_log_result
 
 - name: Gather temporary password
-  shell: >-
+  ansible.builtin.shell: >-
     set -o pipefail ; \
     grep 'temporary password' \
     {{ mysql_install_log_path }} \
@@ -20,8 +20,8 @@
   no_log: "{{ mysql_no_log | default(true) }}"
 
 - name: Set new password
-  expect:
-    command: >-
+  ansible.builtin.expect:
+    ansible.builtin.command: >-
       mysql -e
       "
       ALTER USER 'root'@'localhost'
@@ -41,7 +41,7 @@
     LANG: en_US
 
 - name: Remove install log
-  file:
+  ansible.builtin.file:
     path: "{{ mysql_install_log_path }}"
     state: absent
   when:
@@ -49,8 +49,8 @@
     - mysql_log_error != mysql_install_log_path
 
 - name: Setup root user autologin
-  expect:
-    command: >-
+  ansible.builtin.expect:
+    ansible.builtin.command: >-
       mysql_config_editor set --user="{{ mysql_root_user }}" --password
     responses:
       "Enter password": "{{ mysql_root_password }}"
@@ -59,7 +59,7 @@
   no_log: "{{ mysql_no_log | default(true) }}"
 
 - name: Setup logrotate
-  template:
+  ansible.builtin.template:
     src: logrotate.j2
     dest: "{{ mysql_logrotate_config_path }}"
     mode: "0644"

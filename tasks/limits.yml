@@ -1,7 +1,9 @@
 ---
-- block:
+
+- name: Setup mysql limits
+  block:
     - name: Create directory for mysql systemd service overrides
-      file:
+      ansible.builtin.file:
         path: "{{ mysql_systemd_overrides_dir }}"
         state: directory
         owner: root
@@ -9,7 +11,7 @@
         mode: 0755
 
     - name: Overrides systemd default limits for msyql
-      template:
+      ansible.builtin.template:
         src: limits.j2
         dest: "{{ mysql_systemd_overrides_dir }}/limits.conf"
         owner: root
@@ -19,7 +21,7 @@
       register: mysql_systemd_overrides_limits_result
 
     - name: Reload systemd daemon
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: yes
       when:
         - ansible_facts.service_mgr == "systemd"

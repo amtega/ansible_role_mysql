@@ -1,7 +1,7 @@
 ---
 
 - name: Encrypt mysql backup user password
-  shell: >-
+  ansible.builtin.shell: >-
     set -o pipefail ;
     echo -n '{{ mysql_backup_password }}'
     | sha1sum
@@ -16,7 +16,7 @@
   no_log: "{{ mysql_no_log | default(true) }}"
 
 - name: Encrypt mysql replication user password
-  shell: >-
+  ansible.builtin.shell: >-
     set -o pipefail ;
     echo -n '{{ mysql_replication_password }}'
     | sha1sum

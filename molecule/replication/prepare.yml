@@ -5,7 +5,7 @@
   gather_facts: yes
   tasks:
     - name: Added entries to /etc/hosts
-      shell: >-
+      ansible.builtin.shell: >-
         echo \
         {{ hostvars[primary_host].ansible_facts.default_ipv4.address }} \
         {{ primary_host }} \
