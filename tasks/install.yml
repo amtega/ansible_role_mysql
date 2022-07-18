@@ -1,21 +1,21 @@
 ---
-# Role tasks
 
-- block:
+- name: Install mysql
+  block:
     - name: Install mysql community repository package
-      yum:
+      ansible.builtin.yum:
         name: "{{ mysql_repo_package_url }}"
         state: present
         disable_gpg_check: yes
 
     - name: Disable all mysql releases repositories
-      replace:
+      ansible.builtin.replace:
         path: "{{ mysql_repo_file_path }}"
         regexp: "enabled *= *1"
         replace: "enabled=0"
 
     - name: Disable package manager mysql module
-      command: yum -y module disable mysql
+      ansible.builtin.command: yum -y module disable mysql
       args:
         warn: no
       when: ansible_facts.distribution_major_version is version("7", ">")
@@ -26,7 +26,7 @@
         LANG: en_US
 
     - name: Install selected mysql version
-      yum:
+      ansible.builtin.yum:
         name: "{{ package }}"
         state: present
         enablerepo: "mysql{{ mysql_release }}-community"
@@ -36,13 +36,13 @@
         loop_var: package
 
     - name: Start mysql service with defaults
-      service:
+      ansible.builtin.service:
         name: mysqld
         state: started
         enabled: yes
 
     - name: Setup extra directories
-      file:
+      ansible.builtin.file:
         path: "{{ mysql_extra_dir }}"
         state: directory
         owner: "{{ mysql_user }}"
@@ -59,7 +59,7 @@
         loop_var: mysql_extra_dir
 
     - name: Setup log directory
-      file:
+      ansible.builtin.file:
         path: "{{ mysql_log_dir }}"
         state: directory
         owner: "{{ mysql_user }}"
@@ -71,7 +71,7 @@
         selevel: s0
 
     - name: Setup mysql configuration file
-      template:
+      ansible.builtin.template:
         src: my.cnf.j2
         dest: "{{ mysql_config_file_path }}"
         mode: "0644"
@@ -83,7 +83,7 @@
         - mysql_adjust_limits
 
     - name: Restart mysql service to apply settings
-      service:
+      ansible.builtin.service:
         name: mysqld
         state: restarted
         enabled: yes
