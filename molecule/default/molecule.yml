@@ -57,7 +57,7 @@ provisioner:
       molecule_hosts:
         vars:
           mysql_root_user: root
-          mysql_root_password: t3stp4ssw0rd
+          mysql_root_password: t3stp4ssw0rd  # pragma: allowlist secret
           mysql_no_log: no
       molecule_hosts_fedora:
         vars:

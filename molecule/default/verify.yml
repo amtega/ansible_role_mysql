@@ -14,7 +14,7 @@
       register: mysql_read_info
 
     - name: Assert version installed is correct
-      assert:
+      ansible.builtin.assert:
         that:
           - >-
             mysql_read_info.version.major | string
@@ -24,12 +24,12 @@
             == (mysql_version | string).split(".")[1]
 
     - name: Test root user autologin
-      shell: 'mysql -e "show databases;"'
+      ansible.builtin.shell: 'mysql -e "show databases;"'
       changed_when: no
       register: mysql_autologin_result
 
     - name: Assert root user can access locally without password
-      assert:
+      ansible.builtin.assert:
         that:
           - mysql_autologin_result.stdout is search("mysql")
           - mysql_autologin_result.stdout is search("information_schema")

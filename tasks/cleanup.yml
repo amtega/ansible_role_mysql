@@ -2,7 +2,7 @@
 # Role cleanup tasks
 
 - name: Remove temporary file for dump
-  file:
+  ansible.builtin.file:
     path: "{{ mysql_tmp_result.path }}"
     state: absent
   when: mysql_tmp_result.path is defined

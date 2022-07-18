@@ -11,7 +11,7 @@ dependency:
     requirements-file: >-
       ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
 driver:
-  name: docker
+  name: podman
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
   - name: "mysql-primary-${INSTANCE_UUID:-1}"
@@ -65,9 +65,9 @@ provisioner:
         mysql_version: 8.0
         mysql_replication: yes
         mysql_replication_user: replica
-        mysql_replication_password: t3str3pl1c4
+        mysql_replication_password: t3str3pl1c4  # pragma: allowlist secret
         mysql_root_user: root
-        mysql_root_password: t3stp4ssw0rd
+        mysql_root_password: t3stp4ssw0rd  # pragma: allowlist secret
         mysql_root_allowed_hosts:
           - localhost
         mysql_no_log: no

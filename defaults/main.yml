@@ -19,7 +19,7 @@ mysql_replication: no
 
 # Mysql root password
 
-mysql_root_password: changme
+mysql_root_password: changme  # pragma: allowlist secret
 
 # Indicate if a file with credentials for root autologin must be created
 
@@ -99,7 +99,7 @@ mysql_table_definition_cache: 4096
 mysql_table_open_cache: 4096
 mysql_thread_cache_size: 500
 mysql_tmp_table_size: 32M
-mysql_validate_password_policy: LOW
+mysql_validate_password_policy: LOW  # pragma: allowlist secret
 mysql_pid_file: /var/run/mysqld/mysqld.pid
 mysql_symbolic_links: 0
 mysql_binlog_dir: /var/lib/mysql_binlog
@@ -147,7 +147,7 @@ mysql_relay_log: /var/lib/mysql_binlog/mysql-relay.log
 # Replication user settings
 
 mysql_replication_user: replicator
-mysql_replication_password: changeme
+mysql_replication_password: changeme  # pragma: allowlist secret
 mysql_replication_host: '%'
 mysql_replication_privleges:
   "*":
@@ -158,7 +158,7 @@ mysql_replication_privleges:
 # Backup user settings
 
 mysql_backup_user: dbbackup
-mysql_backup_password: changeme
+mysql_backup_password: changeme  # pragma: allowlist secret
 mysql_backup_privileges:
   "*":
     "*":

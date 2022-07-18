@@ -5,7 +5,8 @@
   gather_facts: no
   become: yes
   tasks:
-    - block:
+    - name: Verify replica
+      block:
         - name: Get replica status
           mysql_replication:
             mode: getreplica
@@ -14,7 +15,7 @@
           register: mysql_verify_replication
 
         - name: Make sure replication is working
-          assert:
+          ansible.builtin.assert:
             that:
               - mysql_verify_replication.Replica_IO_Running == "Yes"
               - mysql_verify_replication.Replica_SQL_Running == "Yes"
