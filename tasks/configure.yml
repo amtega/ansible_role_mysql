@@ -21,7 +21,7 @@
 
 - name: Set new password
   ansible.builtin.expect:
-    ansible.builtin.command: >-
+    command: >-
       mysql -e
       "
       ALTER USER 'root'@'localhost'
@@ -50,7 +50,7 @@
 
 - name: Setup root user autologin
   ansible.builtin.expect:
-    ansible.builtin.command: >-
+    command: >-
       mysql_config_editor set --user="{{ mysql_root_user }}" --password
     responses:
       "Enter password": "{{ mysql_root_password }}"
