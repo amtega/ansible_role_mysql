@@ -191,3 +191,6 @@ mysql_replication_primary_port: >-
 mysql_internal_tmp_disk_storage_engine: MYISAM
 mysql_query_cache_size: 0
 mysql_query_cache_type: "OFF"
+
+# Indicate user agent to download from mysql official page.
+mysql_http_agent: curl/7.79.1
