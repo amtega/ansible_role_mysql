@@ -2,7 +2,7 @@
 
 - name: Install mysql
   block:
-    - name: Install mysql repository rpm
+    - name: Setup mysql community repository
       when: >-
         ansible_local.artifact_mysql_repo.rpm is undefined
         or ansible_local.artifact_mysql_repo.rpm != mysql_repo_package_file
@@ -23,7 +23,7 @@
             disable_gpg_check: yes
           when: artifact_result['mysql_repo'].changed
 
-        - name: Delete mysql community repository package
+        - name: Remove mysql community repository package
           ansible.builtin.include_role:
             name: amtega.artifact
           vars:
