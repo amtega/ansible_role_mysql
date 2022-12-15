@@ -25,12 +25,18 @@ dependencies:
     vars:
       check_platform_distributions:
         centos: 6
-        fedora: 34
+        fedora: 35
         rhel: 6
 
   - role: amtega.proxy_client
     vars:
       proxy_client_permanent: no
+
+  - role: amtega.epel
+
+  - role: amtega.artifact
+    tags:
+      - never
 
   - role: amtega.packages
     vars:

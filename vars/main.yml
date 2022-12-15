@@ -11,17 +11,28 @@ mysql_repo_package_distro_suffix: >-
   {{ (ansible_facts.distribution | lower != "fedora") | ternary("el", "fc")
      + ansible_facts.distribution_major_version | string }}
 
-mysql_repo_package_url: >-
- {{ mysql_repo_package_download_url | urlsplit('scheme')
-    + "://"
-    + mysql_repo_package_download_url | urlsplit('hostname')
-    + "/get/"
-    + lookup("url", mysql_repo_package_download_url, wantlist=True)
+mysql_repo_package_file: >-
+ {{ lookup("url", mysql_repo_package_download_url, wantlist=True,
+            http_agent=mysql_http_agent)
       | select("search", "\.noarch\.rpm")
       | map("regex_replace", ".*(mysql[0-9]+.*\.rpm).*", "\1")
       | select("search", mysql_repo_package_distro_suffix)
       | list
       | first }}
+
+mysql_repo_artifact:
+  type: https
+  host: >-
+    {{ mysql_repo_package_download_url | urlsplit('scheme')
+       + "://"
+       + mysql_repo_package_download_url | urlsplit('hostname') }}
+  path: /get
+  file: "{{ mysql_repo_package_file }}"
+  dest: /tmp
+  http_agent: "{{ mysql_http_agent }}"
+  validate_certs: no
+  timeout: 360
+  retries: 10
 
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 

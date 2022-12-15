@@ -2,11 +2,37 @@
 
 - name: Install mysql
   block:
-    - name: Install mysql community repository package
-      ansible.builtin.yum:
-        name: "{{ mysql_repo_package_url }}"
-        state: present
-        disable_gpg_check: yes
+    - name: Install mysql repository rpm
+      when: >-
+        ansible_local.artifact_mysql_repo.rpm is undefined
+        or ansible_local.artifact_mysql_repo.rpm != mysql_repo_package_file
+      block:
+        - name: Download mysql community repository package
+          ansible.builtin.include_role:
+            name: amtega.artifact
+          vars:
+            artifact_overrides:
+              id: mysql_repo
+              state: present
+            artifact: "{{ mysql_repo_artifact | combine(artifact_overrides) }}"
+
+        - name: Install mysql community repository package
+          ansible.builtin.yum:
+            name: "{{ artifact_result['mysql_repo'].download_path }}"
+            state: present
+            disable_gpg_check: yes
+          when: artifact_result['mysql_repo'].changed
+
+        - name: Delete mysql community repository package
+          ansible.builtin.include_role:
+            name: amtega.artifact
+          vars:
+            artifact_overrides:
+              id: mysql_repo
+              state: absent
+              absent_local_facts:
+                rpm: "{{ mysql_repo_package_file }}"
+            artifact: "{{ mysql_repo_artifact | combine(artifact_overrides) }}"
 
     - name: Disable all mysql releases repositories
       ansible.builtin.replace:
