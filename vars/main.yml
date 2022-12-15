@@ -7,20 +7,24 @@ mysql_release: "{{ (mysql_version | string).split('.')[0:2] | join }}"
 
 mysql_repo_package_download_url: https://dev.mysql.com/downloads/repo/yum
 
+mysql_http_agent: curl/7.79.1
+
 mysql_repo_package_distro_suffix: >-
   {{ (ansible_facts.distribution | lower != "fedora") | ternary("el", "fc")
      + ansible_facts.distribution_major_version | string }}
 
 mysql_repo_package_file: >-
- {{ lookup("url", mysql_repo_package_download_url, wantlist=True,
-            http_agent=mysql_http_agent)
-      | select("search", "\.noarch\.rpm")
-      | map("regex_replace", ".*(mysql[0-9]+.*\.rpm).*", "\1")
-      | select("search", mysql_repo_package_distro_suffix)
-      | list
-      | first }}
+ {{ lookup("url",
+           mysql_repo_package_download_url,
+           wantlist=True,
+           http_agent=mysql_http_agent)
+    | select("search", "\.noarch\.rpm")
+    | map("regex_replace", ".*(mysql[0-9]+.*\.rpm).*", "\1")
+    | select("search", mysql_repo_package_distro_suffix)
+    | list
+    | first }}
 
-mysql_repo_artifact:
+mysql_repo_official_artifact:
   type: https
   host: >-
     {{ mysql_repo_package_download_url | urlsplit('scheme')
@@ -75,14 +79,10 @@ mysql_packages_python:
     7:
       PyMySQL: present
 
-
 # Mysql packages
 
 mysql_packages:
-  - >-
-    {{ "mysql-community-*"
-       + mysql_version | string
-       + "*" }}
+  - "{{ 'mysql-community-*' + mysql_version | string + '*' }}"
 
 # Mysql config file
 

@@ -192,5 +192,15 @@ mysql_internal_tmp_disk_storage_engine: MYISAM
 mysql_query_cache_size: 0
 mysql_query_cache_type: "OFF"
 
-# Indicate user agent to download from mysql official page.
-mysql_http_agent: curl/7.79.1
+# The role will try to identify the mysql repository artifact to download from
+# the official site.
+#
+# If you want to download the mysql repository artifact from other place yo need
+# to configure the `mysql_repo_artifact` variable to point to a local/public
+# repository that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary
+
+mysql_repo_artifact: "{{ mysql_repo_official_artifact }}"
