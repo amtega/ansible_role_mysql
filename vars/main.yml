@@ -7,6 +7,7 @@ mysql_release: "{{ (mysql_version | string).split('.')[0:2] | join }}"
 
 mysql_repo_package_download_url: https://dev.mysql.com/downloads/repo/yum
 
+mysql_repo_repository_url: https://repo.mysql.com
 mysql_http_agent: curl/7.79.1
 
 mysql_repo_package_distro_suffix: >-
@@ -27,10 +28,10 @@ mysql_repo_package_file: >-
 mysql_repo_official_artifact:
   type: https
   host: >-
-    {{ mysql_repo_package_download_url | urlsplit('scheme')
+    {{ mysql_repo_repository_url | urlsplit('scheme')
        + "://"
-       + mysql_repo_package_download_url | urlsplit('hostname') }}
-  path: /get
+       + mysql_repo_repository_url | urlsplit('hostname') }}
+  path: /
   file: "{{ mysql_repo_package_file }}"
   dest: /tmp
   http_agent: "{{ mysql_http_agent }}"
