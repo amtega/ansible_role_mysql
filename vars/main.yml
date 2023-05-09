@@ -37,6 +37,7 @@ mysql_repo_official_artifact:
   validate_certs: no
   timeout: 360
   retries: 10
+  no_log: "{{ mysql_no_log }}"
 
 mysql_repo_file_path: /etc/yum.repos.d/mysql-community.repo
 
